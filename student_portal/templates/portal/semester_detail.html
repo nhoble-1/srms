@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ level }}L {{ semester_display }} Results{% endblock %}
+{% block page_title %}{{ level }}L {{ semester_display }}{% endblock %}
+{% block nav_results %}active{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/auth.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="mb-3 d-flex justify-content-between align-items-center">
+    <a href="{% url 'dashboard' %}#results" class="text-muted small text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+    </a>
+    <a href="{% url 'result_slip_pdf' level=level semester=semester %}" 
+       class="btn btn-primary btn-sm" target="_blank">
+        <i class="bi bi-file-pdf me-1"></i> Result Slip
+    </a>
+</div>
+
+<!-- Header banner -->
+<div class="semester-detail-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <span class="current-sem-badge mb-2 d-inline-block">{{ level }} Level</span>
+            <h4 class="text-white mb-1">{{ semester_display }}</h4>
+            <p class="text-white-50 small mb-0">{{ profile.department.name }}</p>
+        </div>
+        {% if average is not None %}
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <div class="semester-avg-box">
+                <div class="semester-avg-label">Semester GPA</div>
+                <div class="semester-avg-value">{{ average }}</div>
+                <div class="semester-avg-sub">Grade Point Average</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Results table -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-table me-2 text-warning"></i>Course Results
+        </h5>
+    </div>
+
+    {% if courses %}
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th class="col-idx">#</th>
+                    <th>Course Code</th>
+                    <th>Course Title</th>
+                    <th class="text-center">Credit Units</th>
+                    <th class="text-center">CA (30)</th>
+                    <th class="text-center">Exam (70)</th>
+                    <th class="text-center">Total (100)</th>
+                    <th class="text-center">Grade</th>
+                    <th class="text-center">Grade Point</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in courses %}
+                <tr>
+                    <td class="text-muted small">{{ forloop.counter }}</td>
+                    <td><span class="course-code">{{ item.course.code }}</span></td>
+                    <td class="fw-medium">{{ item.course.title }}</td>
+                    <td class="text-center">
+                        <span class="credit-badge">{{ item.course.credit_units }} CU</span>
+                    </td>
+                    <td class="text-center">
+                        {% if item.result %}
+                        {{ item.result.ca_score }}
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if item.result %}
+                        {{ item.result.exam_score }}
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if item.result %}
+                        <span class="score-badge {% if item.result.total_score >= 70 %}score-distinction{% elif item.result.total_score >= 60 %}score-credit{% elif item.result.total_score >= 50 %}score-pass{% elif item.result.total_score >= 45 %}score-marginal{% else %}score-fail{% endif %}">
+                            {{ item.result.total_score }}
+                        </span>
+                        {% else %}
+                        <span class="score-badge score-pending">&mdash;</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if item.result %}
+                        <span class="grade-label grade-{% if item.result.grade == 'A' %}distinction{% elif item.result.grade == 'B' %}credit{% elif item.result.grade == 'C' %}pass{% elif item.result.grade == 'D' %}marginal{% elif item.result.grade == 'E' %}marginal{% else %}fail{% endif %}">
+                            {{ item.result.grade }}
+                        </span>
+                        {% else %}
+                        <span class="text-muted small">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if item.result %}
+                        <strong>{{ item.result.grade_point }}</strong>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            {% if average is not None %}
+            <tfoot>
+                <tr class="table-semester-avg">
+                    <td colspan="4" class="text-end fw-bold small pe-3">
+                        <i class="bi bi-calculator me-1 text-warning"></i>
+                        Semester GPA Calculation
+                        <span class="text-muted fw-normal ms-1">
+                            Σ(Grade Point × Credit Units) / Total Credit Units
+                        </span>
+                    </td>
+                    <td colspan="5" class="text-center">
+                        <span class="avg-final-badge">{{ average }}</span>
+                    </td>
+                </tr>
+            </tfoot>
+            {% endif %}
+        </table>
+    </div>
+    {% else %}
+    <div class="no-results py-5">
+        <i class="bi bi-inbox d-block mb-3 icon-empty-solid"></i>
+        <p>No courses found for this semester</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Fee card -->
+{% if fee %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-receipt me-2 text-warning"></i>Fee Details
+        </h5>
+        {% if fee_payment %}
+            {% if fee_payment.status == 'paid' %}
+            <span class="badge badge-paid px-3 py-2">✓ Payment Verified</span>
+            {% elif fee_payment.status == 'pending' %}
+            <span class="badge badge-pending px-3 py-2">… Pending Verification</span>
+            {% else %}
+            <span class="badge badge-unpaid px-3 py-2">✗ Unpaid</span>
+            {% endif %}
+        {% else %}
+        <span class="badge badge-unpaid px-3 py-2">No Receipt</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-5">
+                <div class="fee-breakdown">
+                    <div class="fee-row"><span>Tuition Fee</span><span>₦{{ fee.tuition_fee|floatformat:2 }}</span></div>
+                    <div class="fee-row"><span>SUG Fee</span><span>₦{{ fee.sug_fee|floatformat:2 }}</span></div>
+                    <div class="fee-row"><span>Lab Fee</span><span>₦{{ fee.lab_fee|floatformat:2 }}</span></div>
+                    <div class="fee-row"><span>Course Fee</span><span>₦{{ fee.course_fee|floatformat:2 }}</span></div>
+                    {% if fee.other_fees > 0 %}
+                    <div class="fee-row"><span>{{ fee.other_fees_description|default:"Other Fees" }}</span><span>₦{{ fee.other_fees|floatformat:2 }}</span></div>
+                    {% endif %}
+                    <div class="fee-row total"><span>Total Amount</span><span>₦{{ fee.total_amount|floatformat:2 }}</span></div>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                {% if fee_payment %}
+                <div class="payment-record-card">
+                    <h6 class="fw-bold mb-3 small">Payment Record</h6>
+                    <div class="row g-2 small">
+                        <div class="col-6 payment-record-label">Amount Paid:</div>
+                        <div class="col-6 text-end fw-bold">₦{{ fee_payment.amount_paid|floatformat:2 }}</div>
+                        {% if fee_payment.bank_name %}
+                        <div class="col-6 payment-record-label">Bank:</div>
+                        <div class="col-6 text-end fw-semibold">{{ fee_payment.bank_name }}</div>
+                        {% endif %}
+                        {% if fee_payment.transaction_reference %}
+                        <div class="col-6 payment-record-label">Reference:</div>
+                        <div class="col-6 text-end"><code class="small">{{ fee_payment.transaction_reference }}</code></div>
+                        {% endif %}
+                        <div class="col-6 payment-record-label">Payment Date:</div>
+                        <div class="col-6 text-end fw-semibold">{{ fee_payment.payment_date }}</div>
+                        <div class="col-6 payment-record-label">Submitted On:</div>
+                        <div class="col-6 text-end">{{ fee_payment.submitted_at|date:"M j, Y" }}</div>
+                    </div>
+                </div>
+                {% if fee_payment.status != 'paid' %}
+                <a href="{% url 'upload_fee_receipt' fee.id %}" class="btn btn-gold w-100 mt-3">
+                    <i class="bi bi-upload me-2"></i>Re-upload Receipt
+                </a>
+                {% endif %}
+                {% else %}
+                <div class="no-payment-box">
+                    <i class="bi bi-exclamation-circle text-danger d-block fs-1 mb-2"></i>
+                    <p class="text-danger small mb-3">
+                        No payment receipt has been submitted for this semester.
+                    </p>
+                    <a href="{% url 'upload_fee_receipt' fee.id %}" class="btn btn-gold px-5">
+                        <i class="bi bi-upload me-2"></i>Upload Receipt
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Grading System Reference -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h6 class="mb-0">
+            <i class="bi bi-info-circle me-2 text-warning"></i>NUC Grading System Reference
+        </h6>
+    </div>
+    <div class="card-body py-3">
+        <div class="row small">
+            <div class="col-md-6">
+                <table class="table table-sm table-borderless mb-0">
+                    <tr><td>A</td><td>70-100</td><td>5.0</td><td>Distinction</td></tr>
+                    <tr><td>B</td><td>60-69</td><td>4.0</td><td>Credit</td></tr>
+                    <tr><td>C</td><td>50-59</td><td>3.0</td><td>Pass</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-sm table-borderless mb-0">
+                    <tr><td>D</td><td>45-49</td><td>2.0</td><td>Pass (Marginal)</td></tr>
+                    <tr><td>E</td><td>40-44</td><td>1.0</td><td>Pass (Marginal)</td></tr>
+                    <tr><td>F</td><td>0-39</td><td>0.0</td><td>Fail</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

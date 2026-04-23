@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Upload Fee Receipt{% endblock %}
+{% block page_title %}Upload Payment Receipt{% endblock %}
+{% block nav_fees %}active{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/auth.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+
+        <!-- Fee info header -->
+        <div class="fee-upload-header">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="fee-upload-logo">
+                    <i class="bi bi-receipt text-white"></i>
+                </div>
+                <div>
+                    <h5 class="text-white mb-1">Fee Payment</h5>
+                    <small class="text-white-50">
+                        {{ profile.department.name }} &mdash;
+                        {{ fee.level }}L {{ fee.get_semester_display }} &mdash;
+                        {{ fee.session }}
+                    </small>
+                </div>
+            </div>
+            <div class="fee-upload-stats">
+                <div class="row g-2 text-center">
+                    <div class="col-4">
+                        <div class="fee-upload-stat-label">Tuition</div>
+                        <div class="fee-upload-stat-value">&#8358;{{ fee.tuition_fee|floatformat:2 }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="fee-upload-stat-label">SUG Fee</div>
+                        <div class="fee-upload-stat-value">&#8358;{{ fee.sug_fee|floatformat:2 }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="fee-upload-stat-label">Lab Fee</div>
+                        <div class="fee-upload-stat-value">&#8358;{{ fee.lab_fee|floatformat:2 }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="fee-upload-stat-label">Course Fee</div>
+                        <div class="fee-upload-stat-value">&#8358;{{ fee.course_fee|floatformat:2 }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="fee-upload-stat-label">Other Fees</div>
+                        <div class="fee-upload-stat-value">&#8358;{{ fee.other_fees|floatformat:2 }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="fee-upload-stat-label">Total Due</div>
+                        <div class="fee-upload-total">&#8358;{{ fee.total_amount|floatformat:2 }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Existing payment warning -->
+        {% if existing_payment %}
+        <div class="auth-warning-box d-flex gap-3 mb-4">
+            <i class="bi bi-info-circle-fill text-warning auth-warning-icon"></i>
+            <div>
+                <strong class="auth-warning-title">Previous Submission Found</strong>
+                <p class="auth-warning-text mt-1">
+                    You previously uploaded a receipt on {{ existing_payment.submitted_at|date:"F j, Y" }}.
+                    Status: <strong>{{ existing_payment.get_status_display }}</strong>.
+                    Submitting again will replace the previous submission.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Instructions -->
+        <div class="alert alert-info d-flex gap-3 mb-4">
+            <i class="bi bi-shield-check fs-5 flex-shrink-0 mt-1"></i>
+            <div>
+                <strong>Before You Upload</strong>
+                <ul class="mb-0 mt-1 small">
+                    <li>Ensure the receipt is clear and all text is readable</li>
+                    <li>The transaction reference must match your bank records</li>
+                    <li>Accepted formats: PDF, JPG, PNG (Max 5MB)</li>
+                    <li>False receipts may lead to disciplinary action</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-cloud-upload me-2 text-warning"></i>Payment Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="receiptForm">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">Amount Paid (&#8358;) *</label>
+                            {{ form.amount_paid }}
+                            {% if form.amount_paid.errors %}
+                            <div class="text-danger mt-1 small">{{ form.amount_paid.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">Payment Date *</label>
+                            {{ form.payment_date }}
+                            {% if form.payment_date.errors %}
+                            <div class="text-danger mt-1 small">{{ form.payment_date.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">Bank Name</label>
+                            {{ form.bank_name }}
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">Transaction Reference / RRR</label>
+                            {{ form.transaction_reference }}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label auth-label">Upload Receipt *</label>
+                            <div class="upload-dropzone" id="dropzone">
+                                <i class="bi bi-cloud-arrow-up upload-dropzone-icon"></i>
+                                <p class="upload-dropzone-text">
+                                    Drag &amp; drop your receipt here or click to browse
+                                </p>
+                                {{ form.receipt }}
+                                <p class="upload-dropzone-hint">
+                                    Supported: PDF, JPG, PNG &mdash; Max 5MB
+                                </p>
+                            </div>
+                            {% if form.receipt.errors %}
+                            <div class="text-danger mt-1 small">{{ form.receipt.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- File preview (hidden until file chosen) -->
+                    <div id="filePreview" class="upload-file-preview d-none">
+                        <i class="bi bi-file-earmark-check-fill text-success fs-4 flex-shrink-0"></i>
+                        <div>
+                            <div class="upload-file-name" id="fileName"></div>
+                            <div class="upload-file-size" id="fileSize"></div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a href="{% url 'dashboard' %}" class="btn btn-light fw-semibold px-4">Cancel</a>
+                        <button type="button" class="btn btn-gold fw-bold px-5"
+                                onclick="confirmUpload()">
+                            <i class="bi bi-upload me-2"></i>Submit Receipt
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content auth-modal-content">
+
+            <div class="auth-modal-header-gold">
+                <h5 class="modal-title text-white fw-bold">
+                    <i class="bi bi-upload me-2"></i>Confirm Upload
+                </h5>
+            </div>
+
+            <div class="auth-modal-body">
+                <p class="mb-3">You are about to submit your payment receipt for verification.</p>
+                <div class="auth-modal-info-box">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Semester:</span>
+                        <strong>{{ fee.level }}L {{ fee.get_semester_display }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Session:</span>
+                        <strong>{{ fee.session }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Total Due:</span>
+                        <strong class="text-warning">&#8358;{{ fee.total_amount|floatformat:2 }}</strong>
+                    </div>
+                </div>
+                <p class="text-muted small mt-3 mb-0">
+                    <i class="bi bi-info-circle me-1"></i>
+                    An admin will verify your payment. You will see the status update in your dashboard.
+                </p>
+            </div>
+
+            <div class="auth-modal-footer d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light fw-semibold px-4"
+                        data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-gold fw-bold px-4"
+                        onclick="document.getElementById('receiptForm').submit()">
+                    <i class="bi bi-check2 me-1"></i>Submit Receipt
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmUpload() {
+    const form = document.getElementById('receiptForm');
+    if (form.checkValidity()) {
+        new bootstrap.Modal(document.getElementById('uploadModal')).show();
+    } else {
+        form.reportValidity();
+    }
+}
+
+// File preview
+document.querySelector('input[type="file"]').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file) {
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+        document.getElementById('filePreview').classList.remove('d-none');
+        document.getElementById('dropzone').style.borderColor = '#86efac';
+    }
+});
+
+// Drag-and-drop styling
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.style.borderColor = '#c8952a'; dz.style.background = '#fffbeb'; });
+dz.addEventListener('dragleave', ()  => { dz.style.borderColor = '#cbd5e1'; dz.style.background = '#f8fafc'; });
+dz.addEventListener('drop',      ()  => { dz.style.borderColor = '#86efac'; });
+</script>
+{% endblock %}

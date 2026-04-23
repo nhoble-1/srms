@@ -1,0 +1,16 @@
+# Core
+Django==4.2.16
+Pillow==10.4.0
+
+# Production static files
+whitenoise==6.7.0
+
+# PostgreSQL support (production)
+psycopg2-binary==2.9.9
+dj-database-url==2.2.0
+
+# WSGI server
+gunicorn==22.0.0
+
+# PDF generation — pure Python, no system libraries required
+reportlab==4.2.2

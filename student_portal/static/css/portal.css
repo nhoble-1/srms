@@ -1,0 +1,1438 @@
+/*
+   portal.css  — Student Management System
+   All global styles, layout, components, and utilities
+    */
+
+/* ---- CSS CUSTOM PROPERTIES ---- */
+:root {
+    --primary: #1a3a5c;
+    --primary-light: #2a5298;
+    --accent: #c8952a;
+    --accent-light: #f0b429;
+    --success: #198754;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #0dcaf0;
+    --bg-light: #f4f6fb;
+    --bg-card: #ffffff;
+    --text-main: #1a1a2e;
+    --text-muted: #6c757d;
+    --border: #e2e8f0;
+    --sidebar-width: 280px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(26, 58, 92, 0.10);
+    --shadow-lg: 0 8px 32px rgba(26, 58, 92, 0.14);
+    --radius: 14px;
+    --radius-sm: 8px;
+}
+
+/* ---- BASE RESET ---- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg-light);
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+h1, h2, h3, .brand-text {
+    font-family: 'Playfair Display', serif;
+}
+
+/* 
+   SIDEBAR
+    */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(180deg, var(--primary) 0%, #0d2340 100%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+.sidebar-brand {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-brand .logo-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.sidebar-brand h5 {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+.sidebar-brand small {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.72rem;
+}
+
+.sidebar-student {
+    padding: 16px 20px;
+    margin: 12px 16px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-student .student-name {
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.sidebar-student .student-matric {
+    color: var(--accent-light);
+    font-size: 0.75rem;
+}
+
+.sidebar-student .level-badge {
+    background: var(--accent);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.sidebar-nav {
+    padding: 8px 0;
+    flex: 1;
+}
+
+.nav-section-label {
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 12px 24px 4px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    margin: 2px 12px;
+    border-radius: 9px;
+    color: rgba(255, 255, 255, 0.72);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.sidebar-link.active {
+    background: var(--accent);
+    color: white;
+}
+
+.sidebar-link i {
+    font-size: 1.05rem;
+    opacity: 0.85;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-footer a,
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: 100%;
+}
+
+.sidebar-footer a:hover,
+.logout-btn:hover {
+    color: #fff;
+}
+
+.sidebar-footer form {
+    margin: 0;
+    padding: 0;
+}
+
+/* Custom scrollbar */
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+
+/* 
+   MAIN LAYOUT
+    */
+.main-content {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+.topbar-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.page-content {
+    padding: 28px 32px;
+    flex: 1;
+}
+
+/* 
+   CARDS
+    */
+.card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    background: var(--bg-card);
+}
+
+.card-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+    background: transparent;
+}
+
+.card-header h5,
+.card-header h6 {
+    margin: 0;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.card-body {
+    padding: 20px 24px;
+}
+
+/* 
+   STAT CARDS
+   */
+.stat-card {
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+    border: none;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -30px;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.stat-card .stat-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    margin-bottom: 14px;
+}
+
+.stat-card .stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+}
+
+.stat-card .stat-label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 4px;
+}
+
+.stat-navy { background: linear-gradient(135deg, #1a3a5c 0%, #2a5298 100%); }
+.stat-gold  { background: linear-gradient(135deg, #c8952a 0%, #f0b429 100%); }
+.stat-green { background: linear-gradient(135deg, #198754 0%, #20c997 100%); }
+.stat-teal  { background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%); }
+
+/* 
+   TABLES
+    */
+.table {
+    font-size: 0.875rem;
+}
+
+.table thead th {
+    background: var(--bg-light);
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 2px solid var(--border);
+    padding: 12px 16px;
+}
+
+.table tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: rgba(26, 58, 92, 0.03);
+}
+
+/* 
+   BADGES
+    */
+.badge-paid    { background: #d1fae5; color: #065f46; }
+.badge-pending { background: #fef3c7; color: #92400e; }
+.badge-unpaid  { background: #fee2e2; color: #991b1b; }
+
+.score-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 28px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.score-distinction { background: #d1fae5; color: #065f46; }
+.score-credit      { background: #dbeafe; color: #1e40af; }
+.score-pass        { background: #fef9c3; color: #713f12; }
+.score-marginal    { background: #ffedd5; color: #7c2d12; }
+.score-fail        { background: #fee2e2; color: #991b1b; }
+.score-pending     { background: #f1f5f9; color: #64748b; }
+
+/* 
+   SEMESTER ACCORDION
+   */
+.semester-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.semester-header {
+    padding: 16px 22px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+}
+
+.semester-header:hover {
+    background: var(--bg-light);
+}
+
+.semester-header .level-pill {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.semester-header .sem-label {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.95rem;
+}
+
+.semester-header .avg-chip {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* 
+   CURRENT SEMESTER BANNER
+    */
+.current-semester-banner {
+    background: linear-gradient(135deg, var(--primary) 0%, #2a5298 60%, #1a6b8a 100%);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.current-semester-banner::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.current-semester-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    right: 80px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(200, 149, 42, 0.15);
+}
+
+/* 
+   PROFILE HERO
+    */
+.profile-hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #1a5276 100%);
+    border-radius: var(--radius);
+    padding: 32px;
+    color: white;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-hero::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: rgba(200, 149, 42, 0.15);
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.matric-display {
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 3px 12px;
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+/* 
+   ALERTS
+   */
+.alert {
+    border-radius: var(--radius-sm);
+    border: none;
+}
+
+/* 
+   BUTTONS
+    */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 58, 92, 0.25);
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    color: white;
+    padding: 10px 20px;
+    transition: all 0.2s;
+}
+
+.btn-gold:hover {
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(200, 149, 42, 0.35);
+}
+
+/* 
+   MOBILE SIDEBAR TOGGLE & OVERLAY
+    */
+.sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* 
+   FEE BREAKDOWN
+    */
+.fee-breakdown {
+    background: var(--bg-light);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+}
+
+.fee-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 0.875rem;
+    border-bottom: 1px dashed var(--border);
+}
+
+.fee-row:last-child {
+    border-bottom: none;
+}
+
+.fee-row.total {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+/* 
+   ANIMATIONS
+    */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in   { animation: fadeInUp 0.4s ease both; }
+.fade-in-2 { animation: fadeInUp 0.4s 0.1s ease both; }
+.fade-in-3 { animation: fadeInUp 0.4s 0.2s ease both; }
+
+/* 
+   UTILITY / MISC
+    */
+.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    color: var(--primary);
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.section-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-muted);
+}
+
+.no-results i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.4;
+}
+
+/* 
+   RESPONSIVE
+    */
+@media (max-width: 992px) {
+    .sidebar               { transform: translateX(-100%); }
+    .sidebar.open          { transform: translateX(0); }
+    .main-content          { margin-left: 0; }
+    .sidebar-toggle        { display: block; }
+    .sidebar-overlay.show  { display: block; }
+    .page-content          { padding: 20px 16px; }
+    .topbar                { padding: 12px 16px; }
+}
+
+/* 
+   DASHBOARD — PROFILE HERO EXTRAS
+    */
+.profile-meta-tag {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.profile-meta-session {
+    background: rgba(200, 149, 42, 0.3);
+    border-color: rgba(200, 149, 42, 0.5);
+    color: #fde68a;
+    font-weight: 600;
+}
+
+.profile-hero-icon {
+    font-size: 7rem;
+    color: white;
+    opacity: 0.15;
+}
+
+/* 
+   CURRENT SEMESTER BANNER — INNER ELEMENTS
+    */
+.current-sem-badge {
+    background: rgba(32, 201, 151, 0.25);
+    border: 1px solid rgba(32, 201, 151, 0.4);
+    border-radius: 20px;
+    padding: 3px 14px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #6ee7b7;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.current-sem-stat-box {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 14px 18px;
+}
+
+.current-sem-stat-val {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+}
+
+.current-sem-stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* 
+   TABLES — INLINE UTILITY CLASSES
+   */
+.course-code {
+    font-family: monospace;
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.875rem;
+}
+
+.credit-badge {
+    background: #e0e7ff;
+    color: #3730a3;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.grade-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.grade-distinction { color: #065f46; }
+.grade-credit      { color: #1e40af; }
+.grade-pass        { color: #713f12; }
+.grade-marginal    { color: #7c2d12; }
+.grade-fail        { color: #991b1b; }
+
+/* 
+   ACCORDION — SEMESTER TABLE FOOTER & FEE SECTION
+    */
+.table-semester-avg {
+    background: linear-gradient(135deg, rgba(26, 58, 92, 0.04), rgba(200, 149, 42, 0.04));
+}
+
+.avg-final-badge {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border-radius: 8px;
+    padding: 5px 16px;
+    font-weight: 800;
+}
+
+.accordion-fee-section {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    background: #fafbfc;
+}
+
+.accordion-section-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 
+   PAYMENT RECORD CARD (accordion + semester detail)
+    */
+.payment-record-card {
+    background: white;
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid var(--border);
+}
+
+.payment-record-label {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+
+.payment-record-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* 
+   NO PAYMENT BOX
+   */
+.no-payment-box {
+    background: white;
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid #fca5a5;
+    text-align: center;
+}
+
+/* 
+   LEGEND BADGES (score key at bottom of dashboard)
+    */
+.legend-badge {
+    width: auto;
+    padding: 4px 14px;
+    font-size: 0.78rem;
+}
+
+/* 
+   ACCORDION CHEVRON TRANSITION
+    */
+.accordion-chevron {
+    font-size: 0.9rem;
+    transition: transform 0.2s ease;
+}
+
+/* 
+   SEMESTER DETAIL HEADER
+    */
+.semester-detail-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    color: white;
+    margin-bottom: 24px;
+}
+
+.semester-avg-box {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: inline-block;
+    text-align: center;
+}
+
+.semester-avg-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.semester-avg-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1.1;
+}
+
+.semester-avg-sub {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* 
+   STRUCTURAL HELPERS
+    */
+
+/* Table: narrow index column */
+.col-idx    { width: 45px; }
+.col-idx-lg { width: 50px; }
+
+/* Divider with dashed border inside payment record */
+.border-dashed-top {
+    border-top: 1px dashed var(--border);
+}
+
+/* Icon utilities used in section headers */
+.icon-sm-inline {
+    font-size: 0.7rem;
+    vertical-align: middle;
+}
+
+.icon-md-inline {
+    font-size: 0.85rem;
+    vertical-align: middle;
+}
+
+/* Empty-state oversized icon */
+.icon-empty {
+    font-size: 3rem;
+    opacity: 0.25;
+}
+
+.icon-empty-solid {
+    font-size: 3rem;
+}
+
+/* Matric number uses monospace */
+.font-mono {
+    font-family: monospace;
+}
+
+/* Register + modal card shapes */
+.register-card-wrap {
+    max-width: 680px;
+    width: 100%;
+}
+
+.register-card-inner {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.auth-modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+    border: none;
+}
+
+
+/* 
+   SRMS ADDITIONS - Grading System & Result Display
+    */
+
+/* ---- Grade Point Display ---- */
+.grade-point-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 28px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+}
+
+.grade-point-5 { background: #065f46; color: white; }
+.grade-point-4 { background: #1e40af; color: white; }
+.grade-point-3 { background: #713f12; color: white; }
+.grade-point-2 { background: #7c2d12; color: white; }
+.grade-point-1 { background: #991b1b; color: white; }
+.grade-point-0 { background: #991b1b; color: white; }
+
+/* ---- CA/Exam Score Display ---- */
+.score-breakdown {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.score-ca {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.score-exam {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ---- Classification Badges ---- */
+.classification-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.classification-first {
+    background: linear-gradient(135deg, #ffd700, #ffed4a);
+    color: #713f12;
+    border: 1px solid #fbbf24;
+}
+
+.classification-second-upper {
+    background: linear-gradient(135deg, #c0c0c0, #e5e7eb);
+    color: #1e40af;
+    border: 1px solid #9ca3af;
+}
+
+.classification-second-lower {
+    background: linear-gradient(135deg, #cd7f32, #d97706);
+    color: white;
+    border: 1px solid #b45309;
+}
+
+.classification-third {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fbbf24;
+}
+
+.classification-pass {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* ---- CGPA Display Card ---- */
+.cgpa-card {
+    background: linear-gradient(135deg, var(--primary) 0%, #2a5298 100%);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.cgpa-card::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(200, 149, 42, 0.15);
+}
+
+.cgpa-value {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent-light);
+}
+
+.cgpa-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.cgpa-max {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ---- Academic Standing Indicators ---- */
+.standing-good {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.standing-probation {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.standing-withdrawn {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* ---- NUC Grading Scale Table ---- */
+.grading-scale-table {
+    width: 100%;
+    font-size: 0.8rem;
+}
+
+.grading-scale-table th {
+    background: var(--primary);
+    color: white;
+    padding: 8px 12px;
+    font-weight: 600;
+}
+
+.grading-scale-table td {
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.grading-scale-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ---- Result Summary Box ---- */
+.result-summary {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin: 16px 0;
+}
+
+.result-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+}
+
+.result-summary-item:last-child {
+    border-bottom: none;
+}
+
+.result-summary-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.result-summary-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+/* ---- Carryover Course Indicator ---- */
+.carryover-badge {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-left: 8px;
+    border: 1px solid #fbbf24;
+}
+
+.course-row-carryover {
+    background: rgba(245, 158, 11, 0.05);
+    border-left: 3px solid #f59e0b;
+}
+
+/* ---- GPA Progress Bar ---- */
+.gpa-progress {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+
+.gpa-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* ---- Semester GPA Chip ---- */
+.gpa-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.gpa-chip i {
+    color: var(--accent-light);
+}
+
+.gpa-chip.high {
+    background: #065f46;
+}
+
+.gpa-chip.medium {
+    background: #1e40af;
+}
+
+.gpa-chip.low {
+    background: #991b1b;
+}
+
+/* ---- Credit Hours Summary ---- */
+.credit-summary {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    padding: 12px;
+    background: var(--bg-light);
+    border-radius: var(--radius-sm);
+}
+
+.credit-item {
+    text-align: center;
+}
+
+.credit-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.2;
+}
+
+.credit-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ---- Print Styles for PDF ---- */
+@media print {
+    .sidebar, .topbar, .btn, .sidebar-toggle, .no-print {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .page-content {
+        padding: 20px !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .profile-hero, .current-semester-banner {
+        background: #f5f5f5 !important;
+        color: black !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .badge, .score-badge {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* ---- Responsive Table for Results ---- */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.75rem;
+    }
+    
+    .score-badge {
+        width: 40px;
+        height: 24px;
+        font-size: 0.7rem;
+    }
+    
+    .course-code {
+        font-size: 0.75rem;
+    }
+    
+    .credit-badge {
+        padding: 1px 6px;
+        font-size: 0.65rem;
+    }
+}
+
+/* ---- Animation for Grade Updates ---- */
+@keyframes gradeUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); background: var(--accent-light); }
+    100% { transform: scale(1); }
+}
+
+.grade-updated {
+    animation: gradeUpdate 0.5s ease;
+}
+
+/* ---- Tooltip for Grade Information ---- */
+.grade-tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.grade-tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+/* ---- Empty State for No Results ---- */
+.no-results-with-action {
+    text-align: center;
+    padding: 40px;
+}
+
+.no-results-with-action i {
+    font-size: 3rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+    margin-bottom: 16px;
+}
+
+.no-results-with-action h5 {
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.no-results-with-action p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 20px;
+}
+
+/* ---- Classification Display in Profile ---- */
+.profile-classification {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+
+/* ---- Stat Card for CGPA ---- */
+.stat-card.stat-cgpa {
+    background: linear-gradient(135deg, #1a3a5c 0%, #c8952a 100%);
+}
+
+.stat-card.stat-cgpa .stat-value {
+    color: #ffd700;
+}
+
+/* ---- Transcript Specific Styles ---- */
+.transcript-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.transcript-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.transcript-watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 6rem;
+    color: rgba(200, 149, 42, 0.1);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ---- Fee Status with Grade Context ---- */
+.fee-status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.semester-blocked {
+    opacity: 0.7;
+    position: relative;
+}
+
+.semester-blocked::after {
+    content: '🔒 Result withheld - Fee unpaid';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+/*  Profile picture inside avatar circles  */
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+/* Profile hero avatar when showing a real photo */
+.profile-avatar-img {
+    padding: 0;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.15);
+}

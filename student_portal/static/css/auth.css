@@ -1,0 +1,697 @@
+/* 
+   auth.css  —  Login & Registration page styles
+    */
+
+/* ---- AUTH PAGE WRAPPER ---- */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0d2340 0%, #1a3a5c 50%, #0f3460 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 40px 16px;
+}
+
+/* Decorative background blobs */
+.auth-blob-1 {
+    position: absolute;
+    top: -80px;
+    left: -80px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(200, 149, 42, 0.08);
+}
+
+.auth-blob-2 {
+    position: absolute;
+    bottom: -100px;
+    right: -60px;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: rgba(42, 82, 152, 0.2);
+}
+
+.auth-blob-3 {
+    position: absolute;
+    top: 40%;
+    left: 10%;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* ---- AUTH CARD WRAPPER ---- */
+.auth-card-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    width: 100%;
+}
+
+.auth-card-wrap .row {
+    border-radius: 20px;
+    overflow: hidden;
+    min-height: 520px;
+}
+
+/* ---- LEFT PANEL (login) ---- */
+.auth-left-panel {
+    background: linear-gradient(160deg, #1a3a5c 0%, #c8952a 100%);
+}
+
+.auth-left-logo-icon {
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.auth-left-title {
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.auth-left-subtitle {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.9rem;
+}
+
+.auth-feature-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.auth-feature-title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: white;
+}
+
+.auth-feature-desc {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.auth-left-copy {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.72rem;
+    margin-top: 24px;
+}
+
+/* ---- RIGHT PANEL / FORM PANEL ---- */
+.auth-right-panel {
+    background: white;
+    padding: 48px 40px;
+}
+
+.auth-mobile-logo {
+    font-size: 2.5rem;
+    color: #1a3a5c;
+}
+
+.auth-form-title {
+    font-family: 'Playfair Display', serif;
+    color: #1a3a5c;
+    font-size: 1.7rem;
+    margin-bottom: 4px;
+}
+
+.auth-form-subtitle {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 32px;
+}
+
+/* ---- FORM INPUTS ---- */
+.auth-label {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.auth-input-group .input-group-text {
+    background: #f4f6fb;
+    border-right: none;
+}
+
+.auth-input-group .form-control {
+    border-left: none;
+    background: #f4f6fb;
+    padding: 11px 14px;
+}
+
+.auth-input-group .form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+    background: #f4f6fb;
+}
+
+.auth-input-group .auth-input-group-btn {
+    background: #f4f6fb;
+    cursor: pointer;
+    border: 1px solid #ced4da;
+    border-left: none;
+}
+
+/* ---- SUBMIT BUTTON ---- */
+.auth-submit-btn {
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+/* ---- FOOTER LINKS ---- */
+.auth-footer-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.auth-footer-link {
+    color: #1a3a5c;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.auth-footer-link:hover {
+    color: #c8952a;
+    text-decoration: underline;
+}
+
+/* ---- ADMIN HINT BOX ---- */
+.auth-admin-hint {
+    background: #f4f6fb;
+    border-radius: 10px;
+    border-left: 4px solid #c8952a;
+    padding: 12px 14px;
+}
+
+.auth-admin-hint p {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.auth-admin-hint strong {
+    color: #1a3a5c;
+}
+
+.auth-admin-hint a {
+    color: #c8952a;
+}
+
+/* ---- REGISTER HEADER ---- */
+.register-header {
+    background: linear-gradient(135deg, #1a3a5c, #2a5298);
+    padding: 32px 40px;
+    text-align: center;
+}
+
+.register-logo-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: white;
+    margin: 0 auto 16px;
+}
+
+.register-title {
+    color: white;
+    font-family: 'Playfair Display', serif;
+    margin: 0 0 4px;
+}
+
+.register-subtitle {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* ---- WARNING NOTICE BOX ---- */
+.auth-warning-box {
+    background: #fff8e1;
+    border: 1px solid #ffc107;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+}
+
+.auth-warning-icon {
+    color: #f59e0b;
+    font-size: 1.2rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.auth-warning-title {
+    color: #92400e;
+    font-size: 0.875rem;
+}
+
+.auth-warning-text {
+    color: #78350f;
+    font-size: 0.8rem;
+    margin: 4px 0 0;
+}
+
+/* ---- MODAL STYLING ---- */
+.auth-modal-header-primary {
+    background: linear-gradient(135deg, #1a3a5c, #2a5298);
+    border: none;
+    padding: 24px 28px;
+}
+
+.auth-modal-header-danger {
+    background: linear-gradient(135deg, #dc3545, #ff6b6b);
+    border: none;
+    padding: 24px 28px;
+}
+
+.auth-modal-header-gold {
+    background: linear-gradient(135deg, #c8952a, #f0b429);
+    border: none;
+    padding: 24px 28px;
+}
+
+.auth-modal-body {
+    padding: 24px 28px;
+}
+
+.auth-modal-footer {
+    padding: 16px 28px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.auth-modal-danger-list {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.auth-modal-danger-list ul {
+    margin: 0;
+    padding-left: 18px;
+    color: #991b1b;
+    font-size: 0.82rem;
+}
+
+.auth-modal-info-box {
+    background: #f4f6fb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.83rem;
+}
+
+/* ---- REGISTER FORM PANEL ---- */
+.register-form-panel {
+    padding: 36px 40px;
+}
+
+/* ---- READ-ONLY INFO BOX ---- */
+.profile-readonly-box {
+    background: #f4f6fb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.profile-readonly-label {
+    font-size: 0.72rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+.profile-readonly-value {
+    font-weight: 600;
+    color: #1a3a5c;
+    font-size: 0.875rem;
+}
+
+.profile-readonly-note {
+    font-size: 0.75rem;
+}
+
+/* ---- PROFILE COMPLETE HEADER ---- */
+.profile-complete-header {
+    background: linear-gradient(135deg, #1a3a5c, #2a5298);
+    border-radius: 16px;
+    padding: 32px;
+    color: white;
+    margin-bottom: 24px;
+}
+
+.profile-complete-avatar {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ---- DROPZONE ---- */
+.upload-dropzone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    background: #f8fafc;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.upload-dropzone:hover {
+    border-color: #c8952a;
+    background: #fffbeb;
+}
+
+.upload-dropzone-icon {
+    font-size: 2.5rem;
+    color: #94a3b8;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.upload-dropzone-text {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 12px;
+}
+
+.upload-dropzone-hint {
+    color: #94a3b8;
+    font-size: 0.72rem;
+    margin: 8px 0 0;
+}
+
+.upload-file-preview {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.upload-file-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #065f46;
+}
+
+.upload-file-size {
+    font-size: 0.75rem;
+    color: #16a34a;
+}
+
+/* ---- FEE UPLOAD HEADER ---- */
+.fee-upload-header {
+    background: linear-gradient(135deg, #1a3a5c, #c8952a);
+    border-radius: 16px;
+    padding: 28px 32px;
+    color: white;
+    margin-bottom: 24px;
+}
+
+.fee-upload-logo {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.fee-upload-stats {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px 18px;
+}
+
+.fee-upload-stat-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fee-upload-stat-value {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.fee-upload-total {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #fde68a;
+}
+
+/* ---- PAYMENT RECORD CARD ---- */
+.payment-record-card {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.payment-record-label {
+    color: #6c757d;
+    font-size: 0.82rem;
+}
+
+.payment-record-value {
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+
+/* 
+   SRMS ADDITIONS - PDF Buttons & Result Actions
+    */
+
+/* ---- PDF Download Button ---- */
+.btn-pdf {
+    background: linear-gradient(135deg, #dc3545, #ff6b6b);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    padding: 8px 16px;
+    transition: all 0.2s;
+}
+
+.btn-pdf:hover {
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.35);
+}
+
+.btn-pdf i {
+    margin-right: 6px;
+}
+
+/* ---- Result Action Buttons ---- */
+.result-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.btn-result-action {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+}
+
+/* ---- Grade Input Styles (for admin/lecturer) ---- */
+.grade-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.grade-input {
+    width: 70px;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.grade-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200, 149, 42, 0.1);
+}
+
+/* ---- Bulk Upload Dropzone ---- */
+.bulk-upload-dropzone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+    background: var(--bg-light);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.bulk-upload-dropzone:hover {
+    border-color: var(--accent);
+    background: #fffbeb;
+}
+
+.bulk-upload-dropzone i {
+    font-size: 3rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.bulk-upload-dropzone .upload-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.bulk-upload-dropzone .upload-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ---- Result Approval Status ---- */
+.approval-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.approval-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.approval-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.approval-approved {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.approval-verified {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.approval-published {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+/* ---- Transcript Request Button ---- */
+.btn-transcript {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    padding: 10px 20px;
+}
+
+.btn-transcript:hover {
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 58, 92, 0.25);
+}
+
+/* ---- Modal for Result Details ---- */
+.result-detail-modal .modal-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+}
+
+.result-detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.result-detail-label {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.result-detail-value {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* ---- Print Optimizations for Result Slips ---- */
+@media print {
+    .no-print,
+    .btn,
+    .sidebar-toggle,
+    .modal,
+    .alert {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+    
+    .card {
+        border: 1px solid #000;
+        box-shadow: none;
+    }
+    
+    .badge {
+        border: 1px solid #000;
+    }
+}

@@ -1,0 +1,533 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Student Dashboard{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+
+<!--  PROFILE HERO  -->
+<div class="profile-hero fade-in">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            {% if profile.profile_picture %}
+            <div class="profile-avatar profile-avatar-img">
+                <img src="{{ profile.profile_picture.url }}" alt="{{ profile.get_full_name }}" class="avatar-img">
+            </div>
+            {% else %}
+            <div class="profile-avatar">{{ profile.get_full_name|first }}</div>
+            {% endif %}
+            <h3 class="text-white mb-2">{{ profile.get_full_name }}</h3>
+            <span class="matric-display d-inline-block mb-3">{{ profile.matric_number }}</span>
+            <div class="d-flex flex-wrap gap-2 mt-1">
+                <span class="profile-meta-tag">
+                    <i class="bi bi-building me-1 text-warning"></i>{{ profile.department.name }}
+                </span>
+                <span class="profile-meta-tag">
+                    <i class="bi bi-layers me-1 text-warning"></i>{{ profile.current_level }} Level
+                </span>
+                <span class="profile-meta-tag profile-meta-session">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {{ profile.get_current_semester_display }} &mdash; {{ profile.current_session }}
+                </span>
+            </div>
+        </div>
+        <div class="col-md-4 d-none d-md-flex justify-content-end">
+            <i class="bi bi-mortarboard-fill profile-hero-icon"></i>
+        </div>
+    </div>
+</div>
+
+<!--  STAT CARDS  -->
+<div class="row g-3 mb-4 fade-in-2">
+    <div class="col-6 col-md-3">
+        <div class="stat-card stat-navy">
+            <div class="stat-icon"><i class="bi bi-trophy-fill"></i></div>
+            <div class="stat-value">{{ profile.cgpa|floatformat:2 }}</div>
+            <div class="stat-label">CGPA</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card stat-gold">
+            <div class="stat-icon"><i class="bi bi-star-fill"></i></div>
+            <div class="stat-value" style="font-size: 1rem;">{{ classification }}</div>
+            <div class="stat-label">Classification</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card stat-green">
+            <div class="stat-icon"><i class="bi bi-graph-up"></i></div>
+            <div class="stat-value">{{ current_gpa|default:"0.00"|floatformat:2 }}</div>
+            <div class="stat-label">Current GPA</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card stat-teal">
+            <div class="stat-icon"><i class="bi bi-patch-check-fill"></i></div>
+            <div class="stat-value">{{ profile.academic_standing }}</div>
+            <div class="stat-label">Standing</div>
+        </div>
+    </div>
+</div>
+
+<!--  CURRENT SEMESTER  -->
+<div id="current" class="mb-4 fade-in-3">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <div class="section-title">
+                <i class="bi bi-circle-fill me-2 text-success icon-sm-inline"></i>
+                Current Semester
+            </div>
+            <div class="section-sub">
+                {{ profile.get_current_semester_display }} &mdash;
+                {{ profile.current_level }} Level &bull; {{ profile.current_session }}
+            </div>
+        </div>
+        <div>
+            <a href="{% url 'result_slip_pdf' level=profile.current_level semester=profile.current_semester %}" 
+               class="btn btn-outline-primary btn-sm" target="_blank">
+                <i class="bi bi-file-pdf me-1"></i>Current Semester Result
+            </a>
+        </div>
+    </div>
+
+    <div class="current-semester-banner">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <span class="current-sem-badge">
+                    <i class="bi bi-broadcast me-1"></i>In Progress
+                </span>
+                <h4 class="text-white mt-2 mb-1">
+                    {{ profile.current_level }} Level &mdash; {{ profile.get_current_semester_display }}
+                </h4>
+                <p class="text-white-50 small mb-0">
+                    {{ profile.department.name }} &bull; Academic Session: {{ profile.current_session }}
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <div class="current-sem-stat-box d-inline-block text-center">
+                    <div class="current-sem-stat-val">{{ current_courses|length }}</div>
+                    <div class="current-sem-stat-label">Enrolled Courses</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current courses table -->
+    <div class="card mb-3">
+        {% if current_courses %}
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th class="col-idx-lg">#</th>
+                        <th>Course Code</th>
+                        <th>Course Title</th>
+                        <th class="text-center">Credit Unit</th>
+                        <th class="text-center">CA (30)</th>
+                        <th class="text-center">Exam (70)</th>
+                        <th class="text-center">Total</th>
+                        <th class="text-center">Grade</th>
+                        <th class="text-center">GP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in current_courses %}
+                    <tr>
+                        <td class="text-muted small">{{ forloop.counter }}</td>
+                        <td><span class="course-code">{{ item.course.code }}</span></td>
+                        <td class="fw-medium">{{ item.course.title }}</td>
+                        <td class="text-center">
+                            <span class="credit-badge">{{ item.course.credit_units }} CH</span>
+                        </td>
+                        <td class="text-center">
+                            {% if item.result %}
+                            {{ item.result.ca_score }}
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if item.result %}
+                            {{ item.result.exam_score }}
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if item.result %}
+                            <span class="score-badge {% if item.result.total_score >= 70 %}score-distinction{% elif item.result.total_score >= 60 %}score-credit{% elif item.result.total_score >= 50 %}score-pass{% elif item.result.total_score >= 45 %}score-marginal{% else %}score-fail{% endif %}">
+                                {{ item.result.total_score }}
+                            </span>
+                            {% else %}
+                            <span class="score-badge score-pending">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if item.result %}
+                            <span class="grade-label grade-{% if item.result.grade == 'A' %}distinction{% elif item.result.grade == 'B' %}credit{% elif item.result.grade == 'C' %}pass{% elif item.result.grade == 'D' %}marginal{% elif item.result.grade == 'E' %}marginal{% else %}fail{% endif %}">
+                                {{ item.result.grade }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if item.result %}
+                            <strong>{{ item.result.grade_point }}</strong>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-results">
+            <i class="bi bi-inbox"></i>
+            <p>No courses assigned for this semester yet</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Current semester fee -->
+    {% if current_fee %}
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="bi bi-receipt me-2 text-warning"></i>Current Semester Fees
+                    </h6>
+                    {% if current_fee_payment %}
+                        {% if current_fee_payment.status == 'paid' %}
+                        <span class="badge badge-paid px-3 py-2">✓ Verified</span>
+                        {% elif current_fee_payment.status == 'pending' %}
+                        <span class="badge badge-pending px-3 py-2">… Pending</span>
+                        {% else %}
+                        <span class="badge badge-unpaid px-3 py-2">✗ Unpaid</span>
+                        {% endif %}
+                    {% else %}
+                    <span class="badge badge-unpaid px-3 py-2">Not Submitted</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="fee-breakdown">
+                        <div class="fee-row"><span>Tuition Fee</span><span>₦{{ current_fee.tuition_fee|floatformat:2 }}</span></div>
+                        <div class="fee-row"><span>SUG Fee</span><span>₦{{ current_fee.sug_fee|floatformat:2 }}</span></div>
+                        <div class="fee-row"><span>Lab Fee</span><span>₦{{ current_fee.lab_fee|floatformat:2 }}</span></div>
+                        <div class="fee-row"><span>Course Fee</span><span>₦{{ current_fee.course_fee|floatformat:2 }}</span></div>
+                        {% if current_fee.other_fees > 0 %}
+                        <div class="fee-row"><span>{{ current_fee.other_fees_description|default:"Other Fees" }}</span><span>₦{{ current_fee.other_fees|floatformat:2 }}</span></div>
+                        {% endif %}
+                        <div class="fee-row total"><span>Total Amount</span><span>₦{{ current_fee.total_amount|floatformat:2 }}</span></div>
+                    </div>
+
+                    {% if not current_fee_payment or current_fee_payment.status == 'unpaid' %}
+                    <a href="{% url 'upload_fee_receipt' current_fee.id %}" class="btn btn-gold w-100 mt-3">
+                        <i class="bi bi-upload me-2"></i>Upload Payment Receipt
+                    </a>
+                    {% elif current_fee_payment.status == 'pending' %}
+                    <div class="alert alert-warning py-2 px-3 mt-3 mb-0 small">
+                        <i class="bi bi-clock me-1"></i>Receipt uploaded. Awaiting admin verification.
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success py-2 px-3 mt-3 mb-0 small">
+                        <i class="bi bi-check-circle me-1"></i>Payment verified. You're all clear!
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!--  ACADEMIC HISTORY  -->
+<div id="results" class="mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <div class="section-title">
+                <i class="bi bi-archive-fill me-2 text-warning icon-md-inline"></i>
+                Academic History
+            </div>
+            <div class="section-sub">Semester-by-semester results and fees across all completed levels</div>
+        </div>
+        <div>
+            <a href="{% url 'transcript_pdf' %}" class="btn btn-outline-primary btn-sm" target="_blank">
+                <i class="bi bi-file-pdf me-1"></i>Results Transcripts
+            </a>
+        </div>
+    </div>
+
+    {% if past_semesters %}
+        {% for sem in past_semesters %}
+        <div class="semester-card">
+
+            <!-- Accordion toggle header -->
+            <div class="semester-header"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#sem-{{ sem.level }}-{{ sem.semester }}">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <span class="level-pill">{{ sem.level }}L</span>
+                    <div>
+                        <div class="sem-label">{{ sem.semester_display }}</div>
+                        <div class="text-muted small">{{ sem.courses|length }} Courses</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    {% if sem.average is not None %}
+                    <div class="avg-chip">
+                        <i class="bi bi-graph-up me-1 text-warning"></i>Avg:
+                        <strong>{{ sem.average }}</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if sem.fee_payment %}
+                        {% if sem.fee_payment.status == 'paid' %}
+                        <span class="badge badge-paid px-2">Fee Paid</span>
+                        {% elif sem.fee_payment.status == 'pending' %}
+                        <span class="badge badge-pending px-2">Fee Pending</span>
+                        {% else %}
+                        <span class="badge badge-unpaid px-2">Fee Unpaid</span>
+                        {% endif %}
+                    {% elif sem.fee %}
+                    <span class="badge badge-unpaid px-2">No Receipt</span>
+                    {% endif %}
+
+                    <a href="{% url 'result_slip_pdf' level=sem.level semester=sem.semester %}" 
+                       class="btn btn-sm btn-outline-secondary" target="_blank"
+                       onclick="event.stopPropagation()">
+                        <i class="bi bi-file-pdf"></i>
+                    </a>
+
+                    <i class="bi bi-chevron-down text-muted accordion-chevron"></i>
+                </div>
+            </div>
+
+            <!-- Accordion collapse body -->
+            <div class="collapse" id="sem-{{ sem.level }}-{{ sem.semester }}">
+
+                {% if sem.courses %}
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="col-idx">#</th>
+                                <th>Course Code</th>
+                                <th>Course Title</th>
+                                <th class="text-center">Credit</th>
+                                <th class="text-center">CA</th>
+                                <th class="text-center">Exam</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center">Grade</th>
+                                <th class="text-center">GP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in sem.courses %}
+                            <tr>
+                                <td class="text-muted small">{{ forloop.counter }}</td>
+                                <td><span class="course-code">{{ item.course.code }}</span></td>
+                                <td class="fw-medium small">{{ item.course.title }}</td>
+                                <td class="text-center">
+                                    <span class="credit-badge">{{ item.course.credit_units }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if item.result %}{{ item.result.ca_score }}{% else %}-{% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if item.result %}{{ item.result.exam_score }}{% else %}-{% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if item.result %}
+                                    <span class="score-badge {% if item.result.total_score >= 70 %}score-distinction{% elif item.result.total_score >= 60 %}score-credit{% elif item.result.total_score >= 50 %}score-pass{% elif item.result.total_score >= 45 %}score-marginal{% else %}score-fail{% endif %}">
+                                        {{ item.result.total_score }}
+                                    </span>
+                                    {% else %}
+                                    <span class="score-badge score-pending">&mdash;</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if item.result %}
+                                    <span class="grade-label grade-{% if item.result.grade == 'A' %}distinction{% elif item.result.grade == 'B' %}credit{% elif item.result.grade == 'C' %}pass{% elif item.result.grade == 'D' %}marginal{% elif item.result.grade == 'E' %}marginal{% else %}fail{% endif %}">
+                                        {{ item.result.grade }}
+                                    </span>
+                                    {% else %}
+                                    <span class="text-muted small">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if item.result %}
+                                    <strong>{{ item.result.grade_point }}</strong>
+                                    {% else %}-{% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                        {% if sem.average is not None %}
+                        <tfoot>
+                            <tr class="table-semester-avg">
+                                <td colspan="6" class="text-end fw-bold small pe-3">
+                                    <i class="bi bi-calculator me-1 text-warning"></i>
+                                    Semester GPA
+                                </td>
+                                <td class="text-center" colspan="3">
+                                    <span class="avg-final-badge">{{ sem.average }}</span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                        {% endif %}
+                    </table>
+                </div>
+
+                <!-- Fee sub-section inside accordion -->
+                {% if sem.fee %}
+                <div class="accordion-fee-section">
+                    <div class="row align-items-start g-3">
+                        <div class="col-md-6">
+                            <div class="accordion-section-label">
+                                <i class="bi bi-receipt me-1 text-warning"></i>Fee Breakdown
+                            </div>
+                            <div class="fee-breakdown">
+                                <div class="fee-row"><span>Tuition Fee</span><span>₦{{ sem.fee.tuition_fee|floatformat:2 }}</span></div>
+                                <div class="fee-row"><span>SUG Fee</span><span>₦{{ sem.fee.sug_fee|floatformat:2 }}</span></div>
+                                <div class="fee-row"><span>Lab Fee</span><span>₦{{ sem.fee.lab_fee|floatformat:2 }}</span></div>
+                                <div class="fee-row"><span>Course Fee</span><span>₦{{ sem.fee.course_fee|floatformat:2 }}</span></div>
+                                {% if sem.fee.other_fees > 0 %}
+                                <div class="fee-row"><span>{{ sem.fee.other_fees_description|default:"Other Fees" }}</span><span>₦{{ sem.fee.other_fees|floatformat:2 }}</span></div>
+                                {% endif %}
+                                <div class="fee-row total"><span>Total</span><span>₦{{ sem.fee.total_amount|floatformat:2 }}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="accordion-section-label">
+                                <i class="bi bi-credit-card me-1 text-warning"></i>Payment Status
+                            </div>
+                            {% if sem.fee_payment %}
+                            <div class="payment-record-card">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="payment-record-label">Status</span>
+                                    {% if sem.fee_payment.status == 'paid' %}
+                                    <span class="badge badge-paid px-3 py-2">✓ Verified</span>
+                                    {% elif sem.fee_payment.status == 'pending' %}
+                                    <span class="badge badge-pending px-3 py-2">… Pending</span>
+                                    {% else %}
+                                    <span class="badge badge-unpaid px-3 py-2">✗ Unpaid</span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="payment-record-label">Amount Paid</span>
+                                    <span class="fw-bold small">₦{{ sem.fee_payment.amount_paid|floatformat:2 }}</span>
+                                </div>
+                                {% if sem.fee_payment.payment_date %}
+                                <div class="d-flex justify-content-between pt-2 border-dashed-top">
+                                    <span class="payment-record-label">Payment Date</span>
+                                    <span class="small">{{ sem.fee_payment.payment_date }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% if sem.fee_payment.status == 'unpaid' %}
+                            <a href="{% url 'upload_fee_receipt' sem.fee.id %}"
+                               class="btn btn-gold w-100 mt-2 btn-sm">
+                                <i class="bi bi-upload me-1"></i>Re-upload Receipt
+                            </a>
+                            {% endif %}
+                            {% else %}
+                            <div class="no-payment-box">
+                                <i class="bi bi-exclamation-circle text-danger mb-2 d-block fs-3"></i>
+                                <p class="text-danger small mb-2">No payment receipt submitted</p>
+                                <a href="{% url 'upload_fee_receipt' sem.fee.id %}"
+                                   class="btn btn-gold btn-sm px-4">
+                                    <i class="bi bi-upload me-1"></i>Upload Receipt
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% else %}
+                <div class="no-results">
+                    <i class="bi bi-journal-x"></i>
+                    <p>No courses available for this semester</p>
+                </div>
+                {% endif %}
+
+            </div><!-- end collapse -->
+        </div><!-- end semester-card -->
+        {% endfor %}
+
+    {% else %}
+    <div class="card">
+        <div class="no-results py-5">
+            <i class="bi bi-journals d-block mb-3 icon-empty"></i>
+            <h6 class="text-muted">No completed semesters yet</h6>
+            <p class="text-muted small">
+                Your academic history will appear here as you progress through each semester.
+            </p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- GRADING SYSTEM LEGEND  -->
+<div class="card fade-in-3" id="fees">
+    <div class="card-header">
+        <h6 class="mb-0">
+            <i class="bi bi-info-circle me-2 text-warning"></i>Grading System
+        </h6>
+    </div>
+    <div class="card-body py-3">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="score-badge score-distinction legend-badge">A: 70-100 (5.0)</span>
+                    <span class="score-badge score-credit legend-badge">B: 60-69 (4.0)</span>
+                    <span class="score-badge score-pass legend-badge">C: 50-59 (3.0)</span>
+                    <span class="score-badge score-marginal legend-badge">D: 45-49 (2.0)</span>
+                    <span class="score-badge score-marginal legend-badge">E: 40-44 (1.0)</span>
+                    <span class="score-badge score-fail legend-badge">F: 0-39 (0.0)</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge" style="background: #d1fae5; color: #065f46;">First Class: 4.50-5.00</span>
+                    <span class="badge" style="background: #dbeafe; color: #1e40af;">2nd Upper: 3.50-4.49</span>
+                    <span class="badge" style="background: #fef9c3; color: #713f12;">2nd Lower: 2.40-3.49</span>
+                    <span class="badge" style="background: #ffedd5; color: #7c2d12;">Third Class: 1.50-2.39</span>
+                    <span class="badge" style="background: #fee2e2; color: #991b1b;">Pass: 1.00-1.49</span>
+                </div>
+            </div>
+        </div>
+        <p class="text-muted small mt-2 mb-0">
+            <i class="bi bi-calculator me-1"></i>
+            <strong>CGPA</strong> = Σ(Grade Point × Credit Unit) / Total Credit Unit &nbsp;|&nbsp;
+            <strong>GPA</strong> = Semester Grade Point Average
+        </p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(header => {
+    const target = header.getAttribute('data-bs-target');
+    const collapseEl = document.querySelector(target);
+    if (collapseEl) {
+        collapseEl.addEventListener('shown.bs.collapse', () => {
+            header.querySelector('.accordion-chevron').style.transform = 'rotate(180deg)';
+        });
+        collapseEl.addEventListener('hidden.bs.collapse', () => {
+            header.querySelector('.accordion-chevron').style.transform = 'rotate(0deg)';
+        });
+    }
+});
+</script>
+{% endblock %}

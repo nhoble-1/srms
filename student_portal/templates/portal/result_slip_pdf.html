@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Result Slip - {{ profile.matric_number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #1a3a5c;
+            padding-bottom: 15px;
+        }
+        .university-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1a3a5c;
+            margin-bottom: 3px;
+        }
+        .result-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+        .student-info {
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: #f5f5f5;
+        }
+        .student-info table {
+            width: 100%;
+        }
+        .student-info td {
+            padding: 3px;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .results-table th {
+            background-color: #1a3a5c;
+            color: white;
+            padding: 8px 5px;
+            text-align: left;
+            font-size: 11px;
+        }
+        .results-table td {
+            padding: 6px 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        .results-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .summary {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f5f5f5;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+        }
+        .badge-success {
+            color: #065f46;
+            font-weight: bold;
+        }
+        .badge-danger {
+            color: #991b1b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="university-name">UNIQUE OPEN UNIVERSITY</div>
+        <div>Student Result Management System</div>
+        <div class="result-title">SEMESTER RESULT SLIP</div>
+        <div>{{ profile.current_session.name }} Academic Session - {{ semester }}</div>
+    </div>
+    
+    <div class="student-info">
+        <table>
+            <tr>
+                <td><strong>Name:</strong> {{ profile.get_full_name }}</td>
+                <td><strong>Matric Number:</strong> {{ profile.matric_number }}</td>
+            </tr>
+            <tr>
+                <td><strong>Department:</strong> {{ profile.department.name }}</td>
+                <td><strong>Level:</strong> {{ level }}L</td>
+            </tr>
+        </table>
+    </div>
+    
+    <h4 style="margin: 15px 0 10px;">Course Results</h4>
+    <table class="results-table">
+        <thead>
+            <tr>
+                <th>Course Code</th>
+                <th>Course Title</th>
+                <th>Credit</th>
+                <th>CA</th>
+                <th>Exam</th>
+                <th>Total</th>
+                <th>Grade</th>
+                <th>GP</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in courses %}
+            <tr>
+                <td>{{ item.course.code }}</td>
+                <td>{{ item.course.title }}</td>
+                <td class="text-center">{{ item.course.credit_units }}</td>
+                <td class="text-center">{{ item.result.ca_score|default:"-" }}</td>
+                <td class="text-center">{{ item.result.exam_score|default:"-" }}</td>
+                <td class="text-center">{{ item.result.total_score|default:"-" }}</td>
+                <td class="text-center">{{ item.result.grade|default:"-" }}</td>
+                <td class="text-center">{{ item.result.grade_point|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="summary">
+        <table style="width: 100%;">
+            <tr>
+                <td><strong>Total Credit Units:</strong> {{ total_credits }}</td>
+                <td><strong>Semester GPA:</strong> {{ gpa }}</td>
+                <td><strong>Cumulative CGPA:</strong> {{ cgpa }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="footer">
+        <p>Generated on: {{ generated_date|date:"F j, Y - H:i A" }}</p>
+        <p>This is an electronically generated result slip.</p>
+    </div>
+</body>
+</html>

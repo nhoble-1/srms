@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="{% static 'css/auth.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block auth_content %}
+<div class="auth-page">
+    <!-- Background blobs -->
+    <div class="auth-blob-1"></div>
+    <div class="auth-blob-2"></div>
+    <div class="auth-blob-3"></div>
+
+    <div class="auth-card-wrap container">
+        <div class="row g-0 shadow-lg">
+
+            <!-- Left panel -->
+            <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-between p-5 auth-left-panel">
+                <div>
+                    <div class="auth-left-logo-icon">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <h2 class="auth-left-title">UNIQUE OPEN UNIVERSITY</h2>
+                    <p class="auth-left-subtitle">Student academic management system</p>
+                </div>
+
+                <div>
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="auth-feature-icon">
+                                <i class="bi bi-bar-chart-line-fill text-white"></i>
+                            </div>
+                            <div>
+                                <div class="auth-feature-title">Academic Results</div>
+                                <div class="auth-feature-desc">View all semester scores</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="auth-feature-icon">
+                                <i class="bi bi-credit-card-fill text-white"></i>
+                            </div>
+                            <div>
+                                <div class="auth-feature-title">Fee Management</div>
+                                <div class="auth-feature-desc">Upload &amp; track payments</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="auth-feature-icon">
+                                <i class="bi bi-book-fill text-white"></i>
+                            </div>
+                            <div>
+                                <div class="auth-feature-title">Course Records</div>
+                                <div class="auth-feature-desc">All levels &amp; semesters</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="auth-left-copy">&copy; 2026 Unique Open University &mdash; All rights reserved</p>
+                </div>
+            </div>
+
+            <!-- Right / form panel -->
+            <div class="col-lg-7 auth-right-panel">
+                <div class="d-lg-none text-center mb-4">
+                    <i class="bi bi-mortarboard-fill auth-mobile-logo"></i>
+                </div>
+
+                <h3 class="auth-form-title">Welcome back</h3>
+                <p class="auth-form-subtitle">Sign in to your student account</p>
+
+                {% for message in messages %}
+                <div class="alert alert-danger py-2 px-3 mb-3">
+                    <i class="bi bi-exclamation-circle me-1"></i> {{ message }}
+                </div>
+                {% endfor %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label auth-label">Username</label>
+                        <div class="input-group auth-input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person text-muted"></i>
+                            </span>
+                            <input type="text" name="username" class="form-control"
+                                   placeholder="Enter your username" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label auth-label">Password</label>
+                        <div class="input-group auth-input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock text-muted"></i>
+                            </span>
+                            <input type="password" name="password" id="passwordField"
+                                   class="form-control" placeholder="Enter your password" required>
+                            <button type="button" class="input-group-text auth-input-group-btn"
+                                    onclick="togglePassword()">
+                                <i class="bi bi-eye text-muted" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold auth-submit-btn">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'password_reset' %}" class="auth-footer-link" style="font-size:0.85rem;">
+                        <i class="bi bi-key me-1"></i>Forgot your password?
+                    </a>
+                </div>
+
+                <div class="text-center mt-3">
+                    <span class="auth-footer-text">Don't have an account? </span>
+                    <a href="{% url 'register' %}" class="auth-footer-link">Register here</a>
+                </div>
+
+                <div class="mt-4 auth-admin-hint">
+                    <p>
+                        <strong>Admin Access:</strong>
+                        Visit <a href="/admin/">/admin/</a> AUTHORISED STAFFS ONLY
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const field = document.getElementById('passwordField');
+    const icon  = document.getElementById('eyeIcon');
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'bi bi-eye-slash text-muted';
+    } else {
+        field.type = 'password';
+        icon.className = 'bi bi-eye text-muted';
+    }
+}
+</script>
+{% endblock %}

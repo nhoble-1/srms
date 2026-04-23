@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Transcript - {{ profile.matric_number }}</title>
+    <style>
+        @page { size: A4; margin: 2cm; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #1a3a5c; padding-bottom: 20px; }
+        .university-name { font-size: 24px; font-weight: bold; color: #1a3a5c; }
+        .transcript-title { font-size: 20px; margin: 10px 0; }
+        .student-info { margin-bottom: 30px; padding: 15px; background: #f5f5f5; }
+        .section-title { background: #1a3a5c; color: white; padding: 8px; margin: 20px 0 10px; }
+        .results-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .results-table th { background: #e0e0e0; padding: 8px; text-align: left; }
+        .results-table td { padding: 6px; border-bottom: 1px solid #ddd; }
+        .summary-box { margin-top: 30px; padding: 15px; background: #f5f5f5; text-align: center; }
+        .footer { margin-top: 40px; text-align: center; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="university-name">UNIQUE OPEN UNIVERSITY</div>
+        <div class="transcript-title">Official Academic Transcript</div>
+    </div>
+    
+    <div class="student-info">
+        <table style="width: 100%;">
+            <tr>
+                <td><strong>Name:</strong> {{ profile.get_full_name }}</td>
+                <td><strong>Matric Number:</strong> {{ profile.matric_number }}</td>
+            </tr>
+            <tr>
+                <td><strong>Department:</strong> {{ profile.department.name }}</td>
+                <td><strong>Faculty:</strong> {{ profile.department.faculty.name }}</td>
+            </tr>
+            <tr>
+                <td><strong>Mode of Entry:</strong> {{ profile.mode_of_entry }}</td>
+                <td><strong>Entry Year:</strong> {{ profile.entry_year }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    {% for session_key, results in transcript_data.items %}
+    <div class="section-title">{{ session_key }}</div>
+    <table class="results-table">
+        <thead>
+            <tr>
+                <th>Course Code</th>
+                <th>Course Title</th>
+                <th>Credit</th>
+                <th>Score</th>
+                <th>Grade</th>
+                <th>GP</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.course.code }}</td>
+                <td>{{ result.course.title }}</td>
+                <td>{{ result.course.credit_hours }}</td>
+                <td>{{ result.total_score }}</td>
+                <td>{{ result.grade }}</td>
+                <td>{{ result.grade_point }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+    
+    <div class="summary-box">
+        <h3>Cumulative Grade Point Average (CGPA): {{ cgpa }}</h3>
+        <h4>Classification: {{ classification }}</h4>
+    </div>
+    
+    <div class="footer">
+        <p>Generated on: {{ generated_date|date:"F j, Y" }}</p>
+        <p>This is an official transcript generated electronically.</p>
+    </div>
+</body>
+</html>

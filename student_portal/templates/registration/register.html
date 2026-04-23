@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="{% static 'css/auth.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block auth_content %}
+<div class="auth-page">
+    <div class="auth-blob-1"></div>
+    <div class="auth-blob-2"></div>
+
+    <div class="auth-card-wrap register-card-wrap container">
+        <div class="shadow-lg register-card-inner">
+
+            <!-- Header -->
+            <div class="register-header">
+                <div class="register-logo-icon">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+                <h3 class="register-title">Create Your Account</h3>
+                <p class="register-subtitle">Fill in your details to register as a student</p>
+            </div>
+
+            <!-- Form body -->
+            <div class="register-form-panel bg-white">
+
+                <!-- Warning notice -->
+                <div class="auth-warning-box d-flex gap-3">
+                    <i class="bi bi-exclamation-triangle-fill auth-warning-icon"></i>
+                    <div>
+                        <strong class="auth-warning-title">Important Notice</strong>
+                        <p class="auth-warning-text">
+                            Please ensure all information is correct. Once your profile is saved,
+                            it <strong>cannot be edited</strong>. Contact the admin for corrections.
+                        </p>
+                    </div>
+                </div>
+
+                <form method="post" id="registerForm">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 px-3 mb-3">
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">First Name *</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                            <div class="text-danger mt-1 small">{{ form.first_name.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">Last Name *</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                            <div class="text-danger mt-1 small">{{ form.last_name.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label auth-label">Email Address *</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <div class="text-danger mt-1 small">{{ form.email.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">Matric Number *</label>
+                            {{ form.matric_number }}
+                            {% if form.matric_number.errors %}
+                            <div class="text-danger mt-1 small">{{ form.matric_number.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">Department *</label>
+                            {{ form.department }}
+                            {% if form.department.errors %}
+                            <div class="text-danger mt-1 small">{{ form.department.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label auth-label">Username *</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                            <div class="text-danger mt-1 small">{{ form.username.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">Password *</label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                            <div class="text-danger mt-1 small">{{ form.password1.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label auth-label">Confirm Password *</label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                            <div class="text-danger mt-1 small">{{ form.password2.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="button" class="btn btn-primary w-100 py-3 fw-bold"
+                                onclick="showConfirmModal()">
+                            <i class="bi bi-check2-circle me-2"></i>Create Account
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <span class="auth-footer-text">Already have an account? </span>
+                    <a href="{% url 'login' %}" class="auth-footer-link">Sign in here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content auth-modal-content">
+
+            <div class="auth-modal-header-primary">
+                <div>
+                    <h5 class="modal-title text-white fw-bold mb-1">
+                        <i class="bi bi-shield-check me-2 text-warning"></i>Confirm Registration
+                    </h5>
+                    <p class="text-white-50 mb-0 small">Please review before submitting</p>
+                </div>
+            </div>
+
+            <div class="auth-modal-body">
+                <div class="auth-warning-box mb-3">
+                    <i class="bi bi-exclamation-triangle-fill auth-warning-icon me-2"></i>
+                    <strong class="auth-warning-title">This action is irreversible!</strong>
+                    <p class="auth-warning-text mt-1">
+                        Once you submit, your profile information <strong>cannot be changed</strong>
+                        without admin intervention. Please ensure all details are correct.
+                    </p>
+                </div>
+                <ul class="small text-secondary ps-3">
+                    <li class="mb-1">Your name, matric number, and department will be locked after saving</li>
+                    <li class="mb-1">Ensure your matric number is correctly formatted</li>
+                    <li>Contact your HOD for any corrections</li>
+                </ul>
+            </div>
+
+            <div class="auth-modal-footer d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light fw-semibold px-4"
+                        data-bs-dismiss="modal">Review Again</button>
+                <button type="button" class="btn btn-primary fw-bold px-4"
+                        onclick="submitForm()">
+                    <i class="bi bi-check2 me-1"></i>Yes, Register Me
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showConfirmModal() {
+    const form = document.getElementById('registerForm');
+    if (form.checkValidity()) {
+        new bootstrap.Modal(document.getElementById('confirmModal')).show();
+    } else {
+        form.reportValidity();
+    }
+}
+function submitForm() {
+    document.getElementById('registerForm').submit();
+}
+</script>
+{% endblock %}
