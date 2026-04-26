@@ -12,5 +12,9 @@ dj-database-url==2.2.0
 # WSGI server
 gunicorn==22.0.0
 
-# PDF generation — pure Python, no system libraries required
+# PDF generation — pure Python, no system libraries needed
 reportlab==4.2.2
+
+# Cloud media storage — persistent uploads across Railway deploys
+cloudinary==1.40.0
+django-cloudinary-storage==0.3.0
