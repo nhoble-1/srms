@@ -27,7 +27,7 @@ class StudentRegistrationForm(UserCreationForm):
     )
     matric_number = forms.CharField(
         max_length=20, required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. UOU/CSC/2020/001'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. CSC/2020/001'}),
     )
 
     class Meta:
@@ -86,21 +86,30 @@ class StudentProfileForm(forms.ModelForm):
             self.fields['email'].initial      = self.user.email
 
     def clean_email(self):
-        """Allow the current user to keep their own email; block duplicates."""
         email = self.cleaned_data.get('email', '').strip().lower()
         qs = User.objects.filter(email=email)
         if self.user:
             qs = qs.exclude(pk=self.user.pk)
         if qs.exists():
-            raise forms.ValidationError('This email address is already in use by another account.')
+            raise forms.ValidationError('This email is already in use by another account.')
         return email
+
+    def clean_profile_picture(self):
+        picture = self.cleaned_data.get('profile_picture')
+        if picture:
+            # Reject files over 2MB
+            if hasattr(picture, 'size') and picture.size > 2 * 1024 * 1024:
+                raise forms.ValidationError('Profile picture must be under 2MB.')
+            # Reject non-image types
+            allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+            if hasattr(picture, 'content_type') and picture.content_type not in allowed:
+                raise forms.ValidationError('Only JPG, PNG, GIF or WEBP images are allowed.')
+        return picture
 
     def save(self, commit=True):
         profile = super().save(commit=False)
         profile.profile_completed = True
         if commit:
-            # Wrap both user and profile saves in one atomic block so
-            # neither is committed unless both succeed.
             with transaction.atomic():
                 if self.user:
                     self.user.first_name = self.cleaned_data['first_name']
@@ -118,7 +127,7 @@ class FeePaymentForm(forms.ModelForm):
         widgets = {
             'amount_paid':           forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Amount Paid (₦)'}),
             'bank_name':             forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. First Bank'}),
-            'transaction_reference': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Transaction Reference/RRR'}),
+            'transaction_reference': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Transaction Reference / RRR'}),
             'payment_date':          forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'receipt':               forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf,.jpg,.jpeg,.png'}),
         }
@@ -135,7 +144,7 @@ class FeePaymentForm(forms.ModelForm):
         if receipt:
             if receipt.size > 5 * 1024 * 1024:
                 raise forms.ValidationError('File size must not exceed 5MB.')
-            allowed_types = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']
-            if hasattr(receipt, 'content_type') and receipt.content_type not in allowed_types:
+            allowed = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']
+            if hasattr(receipt, 'content_type') and receipt.content_type not in allowed:
                 raise forms.ValidationError('Only PDF, JPG, and PNG files are allowed.')
         return receipt
