@@ -407,7 +407,7 @@ def complete_profile(request):
         )
         if form.is_valid():
             form.save()
-            messages.success(request, 'Profile saved successfully! Welcome to UniPortal.')
+            messages.success(request, 'Profile saved successfully! Welcome.')
             return redirect('dashboard')
     else:
         form = StudentProfileForm(instance=profile, user=request.user)
