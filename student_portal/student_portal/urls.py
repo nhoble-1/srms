@@ -11,9 +11,8 @@ logger = logging.getLogger(__name__)
 
 class SafePasswordResetView(auth_views.PasswordResetView):
     """
-    Catches ALL errors including SystemExit (raised when Railway blocks
-    the SMTP port at OS level) so the page never returns a 500.
-    Real error is logged to Railway deploy logs for debugging.
+    Overrides send_mail() directly so the try/except wraps the exact
+    point where the SMTP call happens — before gunicorn can intercept it.
     """
     template_name         = 'registration/password_reset_form.html'
     email_template_name   = 'registration/password_reset_email.txt'
@@ -21,12 +20,17 @@ class SafePasswordResetView(auth_views.PasswordResetView):
     success_url           = '/password-reset/sent/'
 
     def form_valid(self, form):
-        try:
-            return super().form_valid(form)
-        except BaseException as exc:
-            # Catches Exception AND SystemExit (port blocked at OS level)
-            logger.error('Password reset email failed: %s', exc, exc_info=True)
-            return redirect(self.success_url)
+        # Patch send_email on the form instance to catch all failures
+        original_send = form.send_mail
+
+        def safe_send(*args, **kwargs):
+            try:
+                return original_send(*args, **kwargs)
+            except BaseException as exc:
+                logger.error('Password reset email error: %s', exc, exc_info=True)
+
+        form.send_mail = safe_send
+        return super().form_valid(form)
 
 
 urlpatterns = [
