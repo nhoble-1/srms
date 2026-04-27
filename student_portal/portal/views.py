@@ -259,6 +259,8 @@ def _build_transcript_pdf(profile, transcript_data, cgpa,
     story.append(Spacer(1, 5))
     story.append(HRFlowable(width='100%', thickness=1.5, color=NAVY, spaceAfter=8))
 
+    # Student info + passport photo side by side (matches result slip layout)
+    PHOTO_W, PHOTO_H = 2.8*cm, 3.5*cm
     info_rows = [
         [Paragraph('<b>Name:</b>',            s['label']),
          Paragraph(profile.get_full_name(),   s['value']),
@@ -273,9 +275,23 @@ def _build_transcript_pdf(profile, transcript_data, cgpa,
          Paragraph('<b>Entry Year:</b>',        s['label']),
          Paragraph(profile.entry_year or '—',  s['value'])],
     ]
-    info_tbl = Table(info_rows, colWidths=[2.8*cm, 6.2*cm, 2.8*cm, 5.2*cm])
+    info_tbl = Table(info_rows, colWidths=[2.5*cm, 5.5*cm, 2.5*cm, 4.5*cm])
     info_tbl.setStyle(_info_table_style())
-    story.append(info_tbl)
+
+    photo = _get_photo_element(profile, PHOTO_W, PHOTO_H)
+
+    outer = Table([[info_tbl, photo]], colWidths=[15.0*cm, PHOTO_W + 0.4*cm])
+    outer.setStyle(TableStyle([
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ('ALIGN',         (1, 0), (1, 0),   'CENTER'),
+        ('BOX',           (1, 0), (1, 0),   1.0, NAVY),
+        ('BACKGROUND',    (1, 0), (1, 0),   LGREY),
+        ('TOPPADDING',    (1, 0), (1, 0),   3),
+        ('BOTTOMPADDING', (1, 0), (1, 0),   3),
+        ('LEFTPADDING',   (1, 0), (1, 0),   3),
+        ('RIGHTPADDING',  (1, 0), (1, 0),   3),
+    ]))
+    story.append(outer)
     story.append(Spacer(1, 12))
 
     headers = [['Code', 'Course Title', 'Cr', 'Score', 'Grd', 'GP']]
@@ -420,8 +436,8 @@ def complete_profile(request):
 
     if profile.profile_completed:
         messages.warning(request,
-            'Your profile has already been saved and cannot be edited. '
-            'Contact the admin for any corrections.')
+            'Profile saved successfully. '
+            'Contact the admin/HOD for any corrections.')
         return redirect('dashboard')
 
     if request.method == 'POST':
@@ -645,7 +661,7 @@ def semester_detail(request, level, semester):
     })
 
 
-# PDF views — ReportLab (pure Python, works on Railway)
+# PDF views — ReportLab (pure Python)
 @login_required
 def result_slip_pdf(request, level, semester):
     profile = _get_profile_or_none(request)
