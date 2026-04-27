@@ -149,7 +149,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 RESEND_API_KEY     = os.environ.get('RESEND_API_KEY', '')
 DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
-    'Admin <onboarding@resend.dev>',
+    'Acme <onboarding@resend.dev>',
 )
 
 if RESEND_API_KEY:
