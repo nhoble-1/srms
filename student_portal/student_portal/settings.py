@@ -154,7 +154,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 BREVO_API_KEY      = os.environ.get('BREVO_API_KEY', '')
 DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
-    'Unique Open University <noreply@uniqueopenuniversity.edu.ng>',
+    'Admin<realshady02@gmail.com>',
 )
 
 if BREVO_API_KEY:
