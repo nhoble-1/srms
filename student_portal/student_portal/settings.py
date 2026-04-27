@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'anymail',
     'portal',
 ]
 
@@ -114,20 +115,17 @@ if CLOUDINARY_URL:
     INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     MEDIA_URL  = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'   # fallback, not used by cloudinary
+    MEDIA_ROOT = BASE_DIR / 'media'
 else:
-    # No Cloudinary — store locally.
-    # On Railway the /app/media dir must exist; we create it at startup via Procfile.
+    # No Cloudinary — local storage (profile pics won't persist on Railway redeploy)
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_URL  = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 
-# Ensure media directory exists so local uploads never 500
+# Always ensure local media dirs exist (used as fallback)
 import os as _os
-_media_root = BASE_DIR / 'media'
-_os.makedirs(_media_root, exist_ok=True)
-_os.makedirs(_media_root / 'profile_pics', exist_ok=True)
-_os.makedirs(_media_root / 'receipts', exist_ok=True)
+for _d in ['media', 'media/profile_pics', 'media/receipts']:
+    _os.makedirs(BASE_DIR / _d, exist_ok=True)
 
 
 #  Authentication 
@@ -143,33 +141,30 @@ SESSION_COOKIE_AGE              = 60 * 60 * 8
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
-#  Email — Password Reset 
-# Railway blocks SMTP ports (587, 465) at the OS level.
-# We use Brevo (free, 300 emails/day) via their SMTP relay on port 587
-# BUT routed through Django's SMTP backend pointing to Brevo's servers.
+#  Email — Password Reset via Brevo HTTP API 
+# Uses django-anymail which sends over HTTPS (port 443) — Railway
+# never blocks this. No SMTP socket involved at all.
 #
-# 1. Sign up free at https://app.brevo.com
-# 2. Go to SMTP & API → SMTP → Generate SMTP credentials
-# 3. Add these to Railway → Variables:
-#      BREVO_SMTP_USER     = your-brevo-login-email
-#      BREVO_SMTP_PASSWORD = the smtp key brevo gives you (not your password)
+# In Railway → Variables add:
+#   BREVO_API_KEY = your-brevo-api-key  (from Brevo → SMTP & API → API Keys)
+#
+# Your existing BREVO_SMTP_USER / BREVO_SMTP_PASSWORD are NOT used here —
+# this uses the API Key instead which works over HTTPS.
 
-BREVO_SMTP_USER     = os.environ.get('BREVO_SMTP_USER',     '')
-BREVO_SMTP_PASSWORD = os.environ.get('BREVO_SMTP_PASSWORD', '')
-DEFAULT_FROM_EMAIL  = os.environ.get(
+BREVO_API_KEY      = os.environ.get('BREVO_API_KEY', '')
+DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
     'Unique Open University <noreply@uniqueopenuniversity.edu.ng>',
 )
 
-if BREVO_SMTP_USER and BREVO_SMTP_PASSWORD:
-    EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST          = 'smtp-relay.brevo.com'
-    EMAIL_PORT          = 587
-    EMAIL_USE_TLS       = True
-    EMAIL_HOST_USER     = BREVO_SMTP_USER
-    EMAIL_HOST_PASSWORD = BREVO_SMTP_PASSWORD
+if BREVO_API_KEY:
+    # HTTP API — works on Railway, no SMTP ports needed
+    EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+    ANYMAIL = {
+        'BREVO_API_KEY': BREVO_API_KEY,
+    }
 else:
-    # No credentials set — print reset link to Railway logs (for testing)
+    # No API key — print reset link to Railway logs (for testing)
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
