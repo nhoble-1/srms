@@ -151,20 +151,19 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Your existing mailersend_SMTP_USER / mailersend_SMTP_PASSWORD are NOT used here —
 # this uses the API Key instead which works over HTTPS.
 
-MAILERSEND_API_TOKEN      = os.environ.get('MAILERSEND_API_TOKEN', '')
+# Email — MailerSend (HTTPS API, Railway-compatible)
+MAILERSEND_API_TOKEN = os.environ.get('MAILERSEND_API_TOKEN', '')
 DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
-    'Admin <noreply@test-q3enl6k38qm42vwr.mlsender.net>',
+    'Admin <noreply@test-q3enl6k38qm42vwr.mlsender.net>'
 )
 
 if MAILERSEND_API_TOKEN:
-    # HTTP API — works on Railway, no SMTP ports needed
     EMAIL_BACKEND = 'anymail.backends.mailersend.EmailBackend'
     ANYMAIL = {
         'MAILERSEND_API_TOKEN': MAILERSEND_API_TOKEN,
     }
 else:
-    # No API key — print reset link to Railway logs (for testing)
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
