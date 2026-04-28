@@ -39,7 +39,6 @@ WHITE = colors.white
 BLACK = colors.black
 
 
-
 # PDF helpers
 def _pdf_styles():
     return {
@@ -166,12 +165,13 @@ def _build_result_slip_pdf(profile, level, semester_label, course_data,
          Paragraph(str(profile.current_session) if profile.current_session else '—',
                    s['value'])],
     ]
-    info_tbl = Table(info_rows, colWidths=[2.5*cm, 5.2*cm, 2.5*cm, 4.3*cm])
+    # inner cols sum to 13.8cm, outer = 13.8 + 3.2 = 17.0cm usable width
+    info_tbl = Table(info_rows, colWidths=[2.3*cm, 4.8*cm, 2.3*cm, 4.4*cm])
     info_tbl.setStyle(_info_table_style())
 
     photo = _get_photo_element(profile, PHOTO_W, PHOTO_H)
 
-    outer = Table([[info_tbl, photo]], colWidths=[14.7*cm, PHOTO_W + 0.5*cm])
+    outer = Table([[info_tbl, photo]], colWidths=[13.8*cm, PHOTO_W + 0.4*cm])
     outer.setStyle(TableStyle([
         ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
         ('ALIGN',         (1, 0), (1, 0),   'CENTER'),
@@ -259,7 +259,9 @@ def _build_transcript_pdf(profile, transcript_data, cgpa,
     story.append(Spacer(1, 5))
     story.append(HRFlowable(width='100%', thickness=1.5, color=NAVY, spaceAfter=8))
 
-    # Student info + passport photo side by side (matches result slip layout)
+    # Student info + passport photo side by side
+    # A4 usable width = 17.0cm (21cm - 2cm margins each side)
+    # Photo col = 2.8 + 0.4 padding = 3.2cm → info col = 13.8cm
     PHOTO_W, PHOTO_H = 2.8*cm, 3.5*cm
     info_rows = [
         [Paragraph('<b>Name:</b>',            s['label']),
@@ -275,12 +277,14 @@ def _build_transcript_pdf(profile, transcript_data, cgpa,
          Paragraph('<b>Entry Year:</b>',        s['label']),
          Paragraph(profile.entry_year or '—',  s['value'])],
     ]
-    info_tbl = Table(info_rows, colWidths=[2.5*cm, 5.5*cm, 2.5*cm, 4.5*cm])
+    # inner cols sum to 13.8cm exactly
+    info_tbl = Table(info_rows, colWidths=[2.3*cm, 4.8*cm, 2.3*cm, 4.4*cm])
     info_tbl.setStyle(_info_table_style())
 
     photo = _get_photo_element(profile, PHOTO_W, PHOTO_H)
 
-    outer = Table([[info_tbl, photo]], colWidths=[15.0*cm, PHOTO_W + 0.4*cm])
+    # outer cols: 13.8 + 3.2 = 17.0cm = exact usable width
+    outer = Table([[info_tbl, photo]], colWidths=[13.8*cm, PHOTO_W + 0.4*cm])
     outer.setStyle(TableStyle([
         ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
         ('ALIGN',         (1, 0), (1, 0),   'CENTER'),
@@ -436,8 +440,8 @@ def complete_profile(request):
 
     if profile.profile_completed:
         messages.warning(request,
-            'Profile saved successfully. '
-            'Contact the admin/HOD for any corrections.')
+            'Your profile has already been saved and cannot be edited. '
+            'Contact the admin for any corrections.')
         return redirect('dashboard')
 
     if request.method == 'POST':
@@ -608,7 +612,7 @@ def upload_fee_receipt(request, fee_id):
             payment.status  = 'pending'
             payment.save()
             messages.success(request,
-                'Receipt submitted! It will be verified by the school admin.')
+                'Receipt submitted! It will be verified by the admin.')
             return redirect('dashboard')
     else:
         form = FeePaymentForm(fee=fee, student=profile)
@@ -661,7 +665,7 @@ def semester_detail(request, level, semester):
     })
 
 
-# PDF views — ReportLab (pure Python)
+# PDF views — ReportLab (pure Python, works on Railway)
 @login_required
 def result_slip_pdf(request, level, semester):
     profile = _get_profile_or_none(request)
