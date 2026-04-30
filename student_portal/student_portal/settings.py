@@ -11,10 +11,11 @@ SECRET_KEY = os.environ.get(
     'django-insecure-fallback-key-change-in-production',
 )
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get(
-    'ALLOWED_HOSTS', 'localhost 127.0.0.1'
+    'ALLOWED_HOSTS',
+    'localhost 127.0.0.1',
 ).split()
 
 
@@ -26,7 +27,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'anymail',
     'portal',
 ]
 
@@ -99,33 +99,30 @@ USE_I18N      = True
 USE_TZ        = True
 
 
-#  Static files (WhiteNoise) 
-STATIC_URL        = '/static/'
-STATIC_ROOT       = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS  = [BASE_DIR / 'static']
+#  Static files 
+STATIC_URL          = '/static/'
+STATIC_ROOT         = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS    = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 #  Media / uploaded files 
-# Cloudinary keeps uploaded files alive across Railway deploys.
-# Add CLOUDINARY_URL to Railway → Variables to activate.
+# Cloudinary stores uploads permanently across deploys.
+# Set CLOUDINARY_URL in Railway → Variables to activate.
 CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL', '')
 
 if CLOUDINARY_URL:
     INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    MEDIA_URL  = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
 else:
-    # No Cloudinary — local storage (profile pics won't persist on Railway redeploy)
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-    MEDIA_URL  = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
 
-# Always ensure local media dirs exist (used as fallback)
-import os as _os
-for _d in ['media', 'media/profile_pics', 'media/receipts']:
-    _os.makedirs(BASE_DIR / _d, exist_ok=True)
+MEDIA_URL  = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Ensure local media dirs always exist
+os.makedirs(BASE_DIR / 'media' / 'profile_pics', exist_ok=True)
+os.makedirs(BASE_DIR / 'media' / 'receipts',     exist_ok=True)
 
 
 #  Authentication 
@@ -141,45 +138,19 @@ SESSION_COOKIE_AGE              = 60 * 60 * 8
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
-#  Email — Password Reset via mailersend HTTP API 
-# Uses django-anymail which sends over HTTPS (port 443) — Railway
-# never blocks this. No SMTP socket involved at all.
-#
-# In Railway → Variables add:
-#   MAILERSEND_API_TOKEN = your-mailersend-api-key  (from mailersend → SMTP & API → API Keys)
-#
-# Your existing mailersend_SMTP_USER / mailersend_SMTP_PASSWORD are NOT used here —
-# this uses the API Key instead which works over HTTPS.
-
-# Email — MailerSend (HTTPS API, Railway-compatible)
-MAILERSEND_API_TOKEN = os.environ.get('MAILERSEND_API_TOKEN', '')
-DEFAULT_FROM_EMAIL = os.environ.get(
-    'DEFAULT_FROM_EMAIL',
-    'Admin <noreply@test-q3enl6k38qm42vwr.mlsender.net>'
-)
-
-if MAILERSEND_API_TOKEN:
-    EMAIL_BACKEND = 'anymail.backends.mailersend.EmailBackend'
-    ANYMAIL = {
-        'MAILERSEND_API_TOKEN': MAILERSEND_API_TOKEN,
-    }
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
 #  Production security headers 
 if not DEBUG:
-    SECURE_BROWSER_XSS_FILTER       = True
-    SECURE_CONTENT_TYPE_NOSNIFF     = True
-    SECURE_HSTS_SECONDS             = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS  = True
-    SECURE_HSTS_PRELOAD             = True
-    SECURE_SSL_REDIRECT             = False
-    SECURE_PROXY_SSL_HEADER         = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SESSION_COOKIE_SECURE           = True
-    CSRF_COOKIE_SECURE              = True
-    X_FRAME_OPTIONS                 = 'DENY'
-    CSRF_TRUSTED_ORIGINS            = [
-        'https://student-portal-production-7f1d.up.railway.app',
-        'https://*.up.railway.app',
-    ]
+    SECURE_BROWSER_XSS_FILTER      = True
+    SECURE_CONTENT_TYPE_NOSNIFF    = True
+    SECURE_HSTS_SECONDS            = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD            = True
+    SECURE_SSL_REDIRECT            = False
+    SECURE_PROXY_SSL_HEADER        = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE          = True
+    CSRF_COOKIE_SECURE             = True
+    X_FRAME_OPTIONS                = 'DENY'
+    CSRF_TRUSTED_ORIGINS           = os.environ.get(
+        'CSRF_TRUSTED_ORIGINS',
+        'https://localhost',
+    ).split()
