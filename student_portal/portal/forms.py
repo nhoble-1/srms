@@ -31,7 +31,7 @@ class StudentRegistrationForm(UserCreationForm):
     )
 
     class Meta:
-        model  = User
+        model = User
         fields = ['first_name', 'last_name', 'email', 'username', 'password1', 'password2']
 
     def __init__(self, *args, **kwargs):
@@ -42,15 +42,27 @@ class StudentRegistrationForm(UserCreationForm):
 
     def clean_matric_number(self):
         matric = self.cleaned_data.get('matric_number', '').strip()
+        if not matric:
+            raise forms.ValidationError('Matric number is required.')
         if StudentProfile.objects.filter(matric_number=matric).exists():
             raise forms.ValidationError('This matric number is already registered.')
         return matric
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
+        if not email:
+            raise forms.ValidationError('Email is required.')
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError('This email address is already registered.')
         return email
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username', '').strip()
+        if not username:
+            raise forms.ValidationError('Username is required.')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError('This username is already taken.')
+        return username
 
 
 class StudentProfileForm(forms.ModelForm):
@@ -68,12 +80,12 @@ class StudentProfileForm(forms.ModelForm):
     )
 
     class Meta:
-        model  = StudentProfile
+        model = StudentProfile
         fields = ['phone', 'date_of_birth', 'address', 'profile_picture']
         widgets = {
-            'phone':           forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
-            'date_of_birth':   forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'address':         forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Home Address'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+            'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Home Address'}),
             'profile_picture': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
         }
 
@@ -82,8 +94,8 @@ class StudentProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.user:
             self.fields['first_name'].initial = self.user.first_name
-            self.fields['last_name'].initial  = self.user.last_name
-            self.fields['email'].initial      = self.user.email
+            self.fields['last_name'].initial = self.user.last_name
+            self.fields['email'].initial = self.user.email
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
@@ -111,8 +123,8 @@ class StudentProfileForm(forms.ModelForm):
             with transaction.atomic():
                 if self.user:
                     self.user.first_name = self.cleaned_data['first_name']
-                    self.user.last_name  = self.cleaned_data['last_name']
-                    self.user.email      = self.cleaned_data['email']
+                    self.user.last_name = self.cleaned_data['last_name']
+                    self.user.email = self.cleaned_data['email']
                     self.user.save()
                 profile.save()
         return profile
@@ -120,18 +132,18 @@ class StudentProfileForm(forms.ModelForm):
 
 class FeePaymentForm(forms.ModelForm):
     class Meta:
-        model  = FeePayment
+        model = FeePayment
         fields = ['amount_paid', 'bank_name', 'transaction_reference', 'payment_date', 'receipt']
         widgets = {
-            'amount_paid':           forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Amount Paid (₦)'}),
-            'bank_name':             forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. First Bank'}),
+            'amount_paid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Amount Paid (₦)'}),
+            'bank_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. First Bank'}),
             'transaction_reference': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Transaction Reference / RRR'}),
-            'payment_date':          forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'receipt':               forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf,.jpg,.jpeg,.png'}),
+            'payment_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'receipt': forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf,.jpg,.jpeg,.png'}),
         }
 
     def __init__(self, *args, **kwargs):
-        self.fee     = kwargs.pop('fee', None)
+        self.fee = kwargs.pop('fee', None)
         self.student = kwargs.pop('student', None)
         super().__init__(*args, **kwargs)
         if self.fee:
