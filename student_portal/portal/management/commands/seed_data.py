@@ -31,27 +31,14 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
-        self.stdout.write(self.style.MIGRATE_HEADING('\n=== Database Seeder ===\n'))
+        self.stdout.write(self.style.MIGRATE_HEADING('\n=== UniPortal Database Seeder ===\n'))
 
-        # ── Faculties ─────────────────────────────────────────
         faculties = self._seed_faculties()
-        
-        # ── Academic Sessions and Semesters ───────────────────
         sessions, semesters = self._seed_sessions_and_semesters()
-
-        # ── Departments ───────────────────────────────────────
         departments = self._seed_departments(faculties)
-
-        # ── Courses ───────────────────────────────────────────
         self._seed_courses(departments)
-
-        # ── Sample Fees ───────────────────────────────────────
         self._seed_fees(departments, sessions['current'])
-
-        # ── Superuser ─────────────────────────────────────────
         self._seed_superuser(options['admin_password'])
-
-        # ── Sample Student ────────────────────────────────────
         self._seed_sample_student(departments, sessions['current'], semesters['current'])
 
         self.stdout.write(self.style.SUCCESS('\n✓ Database seeded successfully!\n'))
@@ -91,7 +78,6 @@ class Command(BaseCommand):
             if created:
                 self.stdout.write(f'    + {s["name"]}')
             
-            # Create semesters for this session
             for sem_name, start_month, end_month in [
                 ('First', 9, 1), ('Second', 2, 6)
             ]:
@@ -148,9 +134,7 @@ class Command(BaseCommand):
     def _seed_courses(self, departments):
         self.stdout.write('  Courses...')
         
-        # Computer Science courses (100L - 400L)
         csc_courses = [
-            # 100 Level
             ('CSC101', 'Introduction to Computer Science', 3, '100', 'First'),
             ('CSC102', 'Programming in Python', 3, '100', 'Second'),
             ('MTH101', 'General Mathematics I', 3, '100', 'First'),
@@ -159,21 +143,18 @@ class Command(BaseCommand):
             ('PHY102', 'General Physics II', 3, '100', 'Second'),
             ('GST101', 'Use of English I', 2, '100', 'First'),
             ('GST102', 'Use of English II', 2, '100', 'Second'),
-            # 200 Level
             ('CSC201', 'Data Structures', 3, '200', 'First'),
             ('CSC202', 'Algorithms', 3, '200', 'Second'),
             ('CSC203', 'Computer Organization', 3, '200', 'First'),
             ('CSC204', 'Discrete Mathematics', 3, '200', 'Second'),
             ('CSC205', 'Object-Oriented Programming', 3, '200', 'First'),
             ('CSC206', 'Database Systems', 3, '200', 'Second'),
-            # 300 Level
             ('CSC301', 'Operating Systems', 3, '300', 'First'),
             ('CSC302', 'Computer Networks', 3, '300', 'Second'),
             ('CSC303', 'Software Engineering', 3, '300', 'First'),
             ('CSC304', 'Web Development', 3, '300', 'Second'),
             ('CSC305', 'Artificial Intelligence', 3, '300', 'First'),
             ('CSC306', 'Cybersecurity', 3, '300', 'Second'),
-            # 400 Level
             ('CSC401', 'Machine Learning', 3, '400', 'First'),
             ('CSC402', 'Cloud Computing', 3, '400', 'Second'),
             ('CSC403', 'Mobile Development', 3, '400', 'First'),
@@ -190,13 +171,12 @@ class Command(BaseCommand):
                 semester=semester,
                 defaults={
                     'title': title,
-                    'credit_hours': credits,
+                    'credit_units': credits,
                 }
             )
             if created:
                 created_count += 1
         
-        # Add some Business courses
         bus_courses = [
             ('BUS101', 'Introduction to Business', 3, '100', 'First', 'BUS'),
             ('BUS102', 'Business Communication', 3, '100', 'Second', 'BUS'),
@@ -215,7 +195,7 @@ class Command(BaseCommand):
                     semester=semester,
                     defaults={
                         'title': title,
-                        'credit_hours': credits,
+                        'credit_units': credits,
                     }
                 )
                 if created:
@@ -267,7 +247,6 @@ class Command(BaseCommand):
         
         username = '22/12345678'
         
-        # Create or get user
         user, user_created = User.objects.get_or_create(
             username=username,
             defaults={
@@ -280,7 +259,6 @@ class Command(BaseCommand):
             user.set_password('student123')
             user.save()
         
-        # Create or get profile
         profile, profile_created = StudentProfile.objects.get_or_create(
             user=user,
             matric_number=username,
@@ -299,7 +277,6 @@ class Command(BaseCommand):
         )
         
         if profile_created:
-            # Add some sample results
             courses = Course.objects.filter(
                 department=departments['CSC'],
                 level='100'
