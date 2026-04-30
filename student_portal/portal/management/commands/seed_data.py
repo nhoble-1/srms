@@ -31,38 +31,38 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
-        self.stdout.write(self.style.MIGRATE_HEADING('\n Database Seeder \n'))
+        self.stdout.write(self.style.MIGRATE_HEADING('\n=== Database Seeder ===\n'))
 
-        #  Faculties 
+        # ── Faculties ─────────────────────────────────────────
         faculties = self._seed_faculties()
         
-        #  Academic Sessions and Semesters 
+        # ── Academic Sessions and Semesters ───────────────────
         sessions, semesters = self._seed_sessions_and_semesters()
 
-        #  Departments 
+        # ── Departments ───────────────────────────────────────
         departments = self._seed_departments(faculties)
 
-        #  Courses 
+        # ── Courses ───────────────────────────────────────────
         self._seed_courses(departments)
 
-        #  Sample Fees 
+        # ── Sample Fees ───────────────────────────────────────
         self._seed_fees(departments, sessions['current'])
 
-        #  Superuser 
+        # ── Superuser ─────────────────────────────────────────
         self._seed_superuser(options['admin_password'])
 
-        #  Sample Student 
+        # ── Sample Student ────────────────────────────────────
         self._seed_sample_student(departments, sessions['current'], semesters['current'])
 
         self.stdout.write(self.style.SUCCESS('\n✓ Database seeded successfully!\n'))
 
     def _seed_faculties(self):
         faculties_data = [
-            {'name': 'Faculty of Science', 'code': 'FOS', 'dean': 'Prof. John Falano'},
-            {'name': 'Faculty of Engineering', 'code': 'FOE', 'dean': 'Prof. Sarah Okoyie'},
-            {'name': 'Faculty of Management Sciences', 'code': 'FMS', 'dean': 'Dr. Michael Nwafor'},
-            {'name': 'Faculty of Social Sciences', 'code': 'FSS', 'dean': 'Prof. Emily Davison'},
-            {'name': 'Faculty of Arts', 'code': 'FOA', 'dean': 'Dr. David Wilson'},
+            {'name': 'Faculty of Science', 'code': 'FOS', 'dean': 'Prof. John Smith'},
+            {'name': 'Faculty of Engineering', 'code': 'FOE', 'dean': 'Prof. Sarah Johnson'},
+            {'name': 'Faculty of Management Sciences', 'code': 'FMS', 'dean': 'Dr. Michael Brown'},
+            {'name': 'Faculty of Social Sciences', 'code': 'FSS', 'dean': 'Prof. Emily Davis'},
+            {'name': 'Faculty of Arts', 'code': 'FOA', 'dean': 'Dr. Robert Wilson'},
         ]
         self.stdout.write('  Faculties...')
         faculties = {}
@@ -190,7 +190,7 @@ class Command(BaseCommand):
                 semester=semester,
                 defaults={
                     'title': title,
-                    'credit_units': credits,
+                    'credit_hours': credits,
                 }
             )
             if created:
@@ -215,7 +215,7 @@ class Command(BaseCommand):
                     semester=semester,
                     defaults={
                         'title': title,
-                        'credit_units': credits,
+                        'credit_hours': credits,
                     }
                 )
                 if created:
@@ -265,30 +265,40 @@ class Command(BaseCommand):
     def _seed_sample_student(self, departments, session, semester):
         self.stdout.write('  Sample student...')
         
-        if not User.objects.filter(username='22/12345678').exists():
-            user = User.objects.create_user(
-                username='22/12345678',
-                password='student123',
-                first_name='David',
-                last_name='Oche',
-                email='realshady02@gmail.com'
-            )
-            
-            profile = StudentProfile.objects.create(
-                user=user,
-                matric_number='22/12345678',
-                department=departments['CSC'],
-                current_level='300',
-                current_semester='First',
-                current_session=session,
-                entry_year='2022',
-                mode_of_entry='UTME',
-                phone='08012345678',
-                address='123 Campus Road, University Town',
-                date_of_birth=date(2004, 5, 15),
-                profile_completed=True,
-            )
-            
+        username = '22/12345678'
+        
+        # Create or get user
+        user, user_created = User.objects.get_or_create(
+            username=username,
+            defaults={
+                'first_name': 'David',
+                'last_name': 'Oche',
+                'email': 'john.doe@students.uniportal.edu',
+            }
+        )
+        if user_created:
+            user.set_password('student123')
+            user.save()
+        
+        # Create or get profile
+        profile, profile_created = StudentProfile.objects.get_or_create(
+            user=user,
+            matric_number=username,
+            defaults={
+                'department': departments['CSC'],
+                'current_level': '300',
+                'current_semester': 'First',
+                'current_session': session,
+                'entry_year': '2022',
+                'mode_of_entry': 'UTME',
+                'phone': '08012345678',
+                'address': '123 Campus Road, University Town',
+                'date_of_birth': date(2004, 5, 15),
+                'profile_completed': True,
+            }
+        )
+        
+        if profile_created:
             # Add some sample results
             courses = Course.objects.filter(
                 department=departments['CSC'],
@@ -296,17 +306,19 @@ class Command(BaseCommand):
             )[:6]
             
             for course in courses:
-                Result.objects.create(
+                Result.objects.get_or_create(
                     student=profile,
                     course=course,
                     session=session,
                     semester=semester,
-                    ca_score=Decimal('25'),
-                    exam_score=Decimal('55'),
-                    status='published',
+                    defaults={
+                        'ca_score': Decimal('25'),
+                        'exam_score': Decimal('55'),
+                        'status': 'published',
+                    }
                 )
             
-            self.stdout.write(f'    + Created student: 22/12345678 / student123')
+            self.stdout.write(f'    + Created student: {username} / student123')
             self.stdout.write(f'      Level: 300L Computer Science')
         else:
             self.stdout.write('    • Sample student already exists — skipped')
