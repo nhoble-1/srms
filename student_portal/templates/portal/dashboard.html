@@ -6,7 +6,6 @@
 
 {% block content %}
 
-<!--  PROFILE HERO  -->
 <div class="profile-hero fade-in">
     <div class="row align-items-center">
         <div class="col-md-8">
@@ -38,7 +37,6 @@
     </div>
 </div>
 
-<!--  STAT CARDS  -->
 <div class="row g-3 mb-4 fade-in-2">
     <div class="col-6 col-md-3">
         <div class="stat-card stat-navy">
@@ -70,7 +68,6 @@
     </div>
 </div>
 
-<!--  CURRENT SEMESTER  -->
 <div id="current" class="mb-4 fade-in-3">
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
@@ -113,7 +110,6 @@
         </div>
     </div>
 
-    <!-- Current courses table -->
     <div class="card mb-3">
         {% if current_courses %}
         <div class="table-responsive">
@@ -192,7 +188,6 @@
         {% endif %}
     </div>
 
-    <!-- Current semester fee -->
     {% if current_fee %}
     <div class="row g-3">
         <div class="col-md-6">
@@ -204,6 +199,8 @@
                     {% if current_fee_payment %}
                         {% if current_fee_payment.status == 'paid' %}
                         <span class="badge badge-paid px-3 py-2">✓ Verified</span>
+                        {% elif current_fee_payment.status == 'part_paid' %}
+                        <span class="badge badge-part-paid px-3 py-2">◐ Part Paid</span>
                         {% elif current_fee_payment.status == 'pending' %}
                         <span class="badge badge-pending px-3 py-2">… Pending</span>
                         {% else %}
@@ -225,7 +222,7 @@
                         <div class="fee-row total"><span>Total Amount</span><span>₦{{ current_fee.total_amount|floatformat:2 }}</span></div>
                     </div>
 
-                    {% if not current_fee_payment or current_fee_payment.status == 'unpaid' %}
+                    {% if not current_fee_payment or current_fee_payment.status == 'unpaid' or current_fee_payment.status == 'part_paid' %}
                     <a href="{% url 'upload_fee_receipt' current_fee.id %}" class="btn btn-gold w-100 mt-3">
                         <i class="bi bi-upload me-2"></i>Upload Payment Receipt
                     </a>
@@ -245,7 +242,6 @@
     {% endif %}
 </div>
 
-<!--  ACADEMIC HISTORY  -->
 <div id="results" class="mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
@@ -266,7 +262,6 @@
         {% for sem in past_semesters %}
         <div class="semester-card">
 
-            <!-- Accordion toggle header -->
             <div class="semester-header"
                  data-bs-toggle="collapse"
                  data-bs-target="#sem-{{ sem.level }}-{{ sem.semester }}">
@@ -288,6 +283,8 @@
                     {% if sem.fee_payment %}
                         {% if sem.fee_payment.status == 'paid' %}
                         <span class="badge badge-paid px-2">Fee Paid</span>
+                        {% elif sem.fee_payment.status == 'part_paid' %}
+                        <span class="badge badge-part-paid px-2">Part Paid</span>
                         {% elif sem.fee_payment.status == 'pending' %}
                         <span class="badge badge-pending px-2">Fee Pending</span>
                         {% else %}
@@ -307,7 +304,6 @@
                 </div>
             </div>
 
-            <!-- Accordion collapse body -->
             <div class="collapse" id="sem-{{ sem.level }}-{{ sem.semester }}">
 
                 {% if sem.courses %}
@@ -384,7 +380,6 @@
                     </table>
                 </div>
 
-                <!-- Fee sub-section inside accordion -->
                 {% if sem.fee %}
                 <div class="accordion-fee-section">
                     <div class="row align-items-start g-3">
@@ -414,6 +409,8 @@
                                     <span class="payment-record-label">Status</span>
                                     {% if sem.fee_payment.status == 'paid' %}
                                     <span class="badge badge-paid px-3 py-2">✓ Verified</span>
+                                    {% elif sem.fee_payment.status == 'part_paid' %}
+                                    <span class="badge badge-part-paid px-3 py-2">◐ Part Paid</span>
                                     {% elif sem.fee_payment.status == 'pending' %}
                                     <span class="badge badge-pending px-3 py-2">… Pending</span>
                                     {% else %}
@@ -431,7 +428,7 @@
                                 </div>
                                 {% endif %}
                             </div>
-                            {% if sem.fee_payment.status == 'unpaid' %}
+                            {% if sem.fee_payment.status == 'unpaid' or sem.fee_payment.status == 'part_paid' %}
                             <a href="{% url 'upload_fee_receipt' sem.fee.id %}"
                                class="btn btn-gold w-100 mt-2 btn-sm">
                                 <i class="bi bi-upload me-1"></i>Re-upload Receipt
@@ -459,8 +456,8 @@
                 </div>
                 {% endif %}
 
-            </div><!-- end collapse -->
-        </div><!-- end semester-card -->
+            </div>
+        </div>
         {% endfor %}
 
     {% else %}
@@ -476,7 +473,6 @@
     {% endif %}
 </div>
 
-<!-- GRADING SYSTEM LEGEND  -->
 <div class="card fade-in-3" id="fees">
     <div class="card-header">
         <h6 class="mb-0">

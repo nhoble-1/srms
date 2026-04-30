@@ -12,7 +12,6 @@
 <div class="row justify-content-center">
     <div class="col-lg-7">
 
-        <!-- Fee info header -->
         <div class="fee-upload-header">
             <div class="d-flex align-items-center gap-3 mb-3">
                 <div class="fee-upload-logo">
@@ -57,7 +56,6 @@
             </div>
         </div>
 
-        <!-- Existing payment warning -->
         {% if existing_payment %}
         <div class="auth-warning-box d-flex gap-3 mb-4">
             <i class="bi bi-info-circle-fill text-warning auth-warning-icon"></i>
@@ -72,7 +70,6 @@
         </div>
         {% endif %}
 
-        <!-- Instructions -->
         <div class="alert alert-info d-flex gap-3 mb-4">
             <i class="bi bi-shield-check fs-5 flex-shrink-0 mt-1"></i>
             <div>
@@ -86,7 +83,6 @@
             </div>
         </div>
 
-        <!-- Form -->
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
@@ -142,7 +138,6 @@
                         </div>
                     </div>
 
-                    <!-- File preview (hidden until file chosen) -->
                     <div id="filePreview" class="upload-file-preview d-none">
                         <i class="bi bi-file-earmark-check-fill text-success fs-4 flex-shrink-0"></i>
                         <div>
@@ -167,7 +162,6 @@
     </div>
 </div>
 
-<!-- Confirmation Modal -->
 <div class="modal fade" id="uploadModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content auth-modal-content">
@@ -222,7 +216,6 @@ function confirmUpload() {
     }
 }
 
-// File preview
 document.querySelector('input[type="file"]').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (file) {
@@ -233,7 +226,6 @@ document.querySelector('input[type="file"]').addEventListener('change', function
     }
 });
 
-// Drag-and-drop styling
 const dz = document.getElementById('dropzone');
 dz.addEventListener('dragover',  e => { e.preventDefault(); dz.style.borderColor = '#c8952a'; dz.style.background = '#fffbeb'; });
 dz.addEventListener('dragleave', ()  => { dz.style.borderColor = '#cbd5e1'; dz.style.background = '#f8fafc'; });
