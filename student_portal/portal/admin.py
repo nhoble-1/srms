@@ -133,7 +133,6 @@ class ResultAdmin(admin.ModelAdmin):
         'student__user__last_name', 'course__code', 'course__title',
     ]
     ordering         = ['-uploaded_at']
-    # autocomplete_fields removed — use raw_id_fields for better compatibility
     raw_id_fields    = ['student', 'course']
     readonly_fields  = ['total_score', 'grade', 'grade_point', 'score']
     actions          = ['approve_results', 'publish_results']
@@ -199,21 +198,31 @@ class FeePaymentAdmin(admin.ModelAdmin):
         'student__user__first_name', 'student__user__last_name',
     ]
     ordering = ['-submitted_at']
-    actions  = ['verify_payments', 'reject_payments']
+    actions  = ['mark_as_paid', 'mark_as_part_paid', 'mark_as_pending', 'mark_as_unpaid']
 
-    def verify_payments(self, request, queryset):
+    def mark_as_paid(self, request, queryset):
         updated = queryset.update(
             status='paid',
             verified_by=request.user,
             verified_at=timezone.now(),
         )
-        self.message_user(request, f'{updated} payment(s) verified successfully.')
-    verify_payments.short_description = '✓ Verify selected payments'
+        self.message_user(request, f'{updated} payment(s) marked as paid.')
+    mark_as_paid.short_description = '✓ Mark as Paid'
 
-    def reject_payments(self, request, queryset):
+    def mark_as_part_paid(self, request, queryset):
+        updated = queryset.update(status='part_paid')
+        self.message_user(request, f'{updated} payment(s) marked as part paid.')
+    mark_as_part_paid.short_description = '◐ Mark as Part Paid'
+
+    def mark_as_pending(self, request, queryset):
+        updated = queryset.update(status='pending')
+        self.message_user(request, f'{updated} payment(s) marked as pending.')
+    mark_as_pending.short_description = '○ Mark as Pending'
+
+    def mark_as_unpaid(self, request, queryset):
         updated = queryset.update(status='unpaid')
         self.message_user(request, f'{updated} payment(s) marked as unpaid.')
-    reject_payments.short_description = '✗ Reject selected payments'
+    mark_as_unpaid.short_description = '✗ Mark as Unpaid'
 
 
 @admin.register(GPAResult)
@@ -232,7 +241,6 @@ class CourseAllocationAdmin(admin.ModelAdmin):
     ordering      = ['-session__name', 'course__code']
 
 
-# Customise admin site header
 admin.site.site_header  = 'UNIQUE OPEN UNIVERSITY'
 admin.site.site_title   = 'Admin Panel'
-admin.site.index_title  = 'Admistration Dashboard'
+admin.site.index_title  = 'Administration Dashboard'

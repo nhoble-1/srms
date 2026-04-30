@@ -31,8 +31,8 @@ from .models import (
 from .forms import StudentRegistrationForm, StudentProfileForm, FeePaymentForm
 
 
-NAVY = colors.HexColor('#1a3a5c')
-GOLD = colors.HexColor('#c8952a')
+NAVY  = colors.HexColor('#1a3a5c')
+GOLD  = colors.HexColor('#c8952a')
 LGREY = colors.HexColor('#f4f6fb')
 DGREY = colors.HexColor('#4a5568')
 WHITE = colors.white
@@ -41,66 +41,66 @@ BLACK = colors.black
 
 def _pdf_styles():
     return {
-        'uni': ParagraphStyle('uni', fontSize=15, fontName='Helvetica-Bold',
-                               textColor=NAVY, spaceAfter=2, alignment=TA_CENTER),
-        'sub': ParagraphStyle('sub', fontSize=8, fontName='Helvetica',
-                               textColor=DGREY, spaceAfter=2, alignment=TA_CENTER),
-        'title': ParagraphStyle('title', fontSize=12, fontName='Helvetica-Bold',
-                                textColor=NAVY, spaceAfter=4, alignment=TA_CENTER),
-        'label': ParagraphStyle('label', fontSize=8, fontName='Helvetica-Bold',
-                                textColor=DGREY),
-        'value': ParagraphStyle('value', fontSize=9, fontName='Helvetica',
-                                textColor=BLACK),
-        'section': ParagraphStyle('section', fontSize=9, fontName='Helvetica-Bold',
-                                  textColor=WHITE),
-        'footer': ParagraphStyle('footer', fontSize=7, fontName='Helvetica',
-                                 textColor=DGREY, alignment=TA_CENTER),
-        'cell_c': ParagraphStyle('cell_c', fontSize=8, fontName='Helvetica',
-                                 textColor=BLACK, alignment=TA_CENTER),
-        'cell_l': ParagraphStyle('cell_l', fontSize=8, fontName='Helvetica',
-                                 textColor=BLACK, alignment=TA_LEFT),
+        'uni':      ParagraphStyle('uni',      fontSize=15, fontName='Helvetica-Bold',
+                                   textColor=NAVY,  spaceAfter=2, alignment=TA_CENTER),
+        'sub':      ParagraphStyle('sub',      fontSize=8,  fontName='Helvetica',
+                                   textColor=DGREY, spaceAfter=2, alignment=TA_CENTER),
+        'title':    ParagraphStyle('title',    fontSize=12, fontName='Helvetica-Bold',
+                                   textColor=NAVY,  spaceAfter=4, alignment=TA_CENTER),
+        'label':    ParagraphStyle('label',    fontSize=8,  fontName='Helvetica-Bold',
+                                   textColor=DGREY),
+        'value':    ParagraphStyle('value',    fontSize=9,  fontName='Helvetica',
+                                   textColor=BLACK),
+        'section':  ParagraphStyle('section',  fontSize=9,  fontName='Helvetica-Bold',
+                                   textColor=WHITE),
+        'footer':   ParagraphStyle('footer',   fontSize=7,  fontName='Helvetica',
+                                   textColor=DGREY, alignment=TA_CENTER),
+        'cell_c':   ParagraphStyle('cell_c',   fontSize=8,  fontName='Helvetica',
+                                   textColor=BLACK, alignment=TA_CENTER),
+        'cell_l':   ParagraphStyle('cell_l',   fontSize=8,  fontName='Helvetica',
+                                   textColor=BLACK, alignment=TA_LEFT),
     }
 
 
 def _result_table_style():
     return TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), NAVY),
-        ('TEXTCOLOR', (0, 0), (-1, 0), WHITE),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 7),
-        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-        ('TOPPADDING', (0, 0), (-1, 0), 6),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
-        ('LINEBELOW', (0, 0), (-1, 0), 1.0, NAVY),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 8),
-        ('ALIGN', (2, 1), (-1, -1), 'CENTER'),
-        ('ALIGN', (0, 1), (1, -1), 'LEFT'),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [WHITE, LGREY]),
-        ('TOPPADDING', (0, 1), (-1, -1), 4),
+        ('BACKGROUND',    (0, 0), (-1, 0),  NAVY),
+        ('TEXTCOLOR',     (0, 0), (-1, 0),  WHITE),
+        ('FONTNAME',      (0, 0), (-1, 0),  'Helvetica-Bold'),
+        ('FONTSIZE',      (0, 0), (-1, 0),  7),
+        ('ALIGN',         (0, 0), (-1, 0),  'CENTER'),
+        ('TOPPADDING',    (0, 0), (-1, 0),  6),
+        ('BOTTOMPADDING', (0, 0), (-1, 0),  6),
+        ('LINEBELOW',     (0, 0), (-1, 0),  1.0, NAVY),
+        ('FONTNAME',      (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE',      (0, 1), (-1, -1), 8),
+        ('ALIGN',         (2, 1), (-1, -1), 'CENTER'),
+        ('ALIGN',         (0, 1), (1, -1),  'LEFT'),
+        ('ROWBACKGROUNDS',(0, 1), (-1, -1), [WHITE, LGREY]),
+        ('TOPPADDING',    (0, 1), (-1, -1), 4),
         ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
-        ('GRID', (0, 0), (-1, -1), 0.3, colors.HexColor('#e2e8f0')),
+        ('GRID',          (0, 0), (-1, -1), 0.3, colors.HexColor('#e2e8f0')),
     ])
 
 
 def _section_heading(label, s):
     tbl = Table([[Paragraph(label, s['section'])]], colWidths=['100%'])
     tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), NAVY),
-        ('TOPPADDING', (0, 0), (-1, -1), 5),
+        ('BACKGROUND',    (0, 0), (-1, -1), NAVY),
+        ('TOPPADDING',    (0, 0), (-1, -1), 5),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-        ('LEFTPADDING', (0, 0), (-1, -1), 8),
+        ('LEFTPADDING',   (0, 0), (-1, -1), 8),
     ]))
     return tbl
 
 
 def _info_table_style():
     return TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), LGREY),
-        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
-        ('TOPPADDING', (0, 0), (-1, -1), 5),
+        ('BACKGROUND',    (0, 0), (-1, -1), LGREY),
+        ('BOX',           (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+        ('TOPPADDING',    (0, 0), (-1, -1), 5),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('LEFTPADDING',   (0, 0), (-1, -1), 6),
     ])
 
 
@@ -140,7 +140,7 @@ def _build_result_slip_pdf(profile, level, semester_label, course_data,
     doc = SimpleDocTemplate(buf, pagesize=A4,
                             leftMargin=2*cm, rightMargin=2*cm,
                             topMargin=2*cm, bottomMargin=2*cm)
-    s = _pdf_styles()
+    s     = _pdf_styles()
     story = []
 
     story.append(Paragraph('UNIQUE OPEN UNIVERSITY', s['uni']))
@@ -153,17 +153,17 @@ def _build_result_slip_pdf(profile, level, semester_label, course_data,
 
     PHOTO_W, PHOTO_H = 2.8*cm, 3.5*cm
     info_rows = [
-        [Paragraph('<b>Name:</b>', s['label']),
+        [Paragraph('<b>Name:</b>',          s['label']),
          Paragraph(profile.get_full_name(), s['value']),
-         Paragraph('<b>Matric No:</b>', s['label']),
-         Paragraph(profile.matric_number, s['value'])],
-        [Paragraph('<b>Department:</b>', s['label']),
+         Paragraph('<b>Matric No:</b>',     s['label']),
+         Paragraph(profile.matric_number,   s['value'])],
+        [Paragraph('<b>Department:</b>',    s['label']),
          Paragraph(profile.department.name, s['value']),
-         Paragraph('<b>Level:</b>', s['label']),
-         Paragraph(f'{level} Level', s['value'])],
-        [Paragraph('<b>Semester:</b>', s['label']),
-         Paragraph(semester_label, s['value']),
-         Paragraph('<b>Session:</b>', s['label']),
+         Paragraph('<b>Level:</b>',         s['label']),
+         Paragraph(f'{level} Level',        s['value'])],
+        [Paragraph('<b>Semester:</b>',      s['label']),
+         Paragraph(semester_label,          s['value']),
+         Paragraph('<b>Session:</b>',       s['label']),
          Paragraph(str(profile.current_session) if profile.current_session else '—',
                    s['value'])],
     ]
@@ -174,14 +174,14 @@ def _build_result_slip_pdf(profile, level, semester_label, course_data,
 
     outer = Table([[info_tbl, photo]], colWidths=[13.8*cm, PHOTO_W + 0.4*cm])
     outer.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('ALIGN', (1, 0), (1, 0), 'CENTER'),
-        ('BOX', (1, 0), (1, 0), 1.0, NAVY),
-        ('BACKGROUND', (1, 0), (1, 0), LGREY),
-        ('TOPPADDING', (1, 0), (1, 0), 3),
-        ('BOTTOMPADDING', (1, 0), (1, 0), 3),
-        ('LEFTPADDING', (1, 0), (1, 0), 3),
-        ('RIGHTPADDING', (1, 0), (1, 0), 3),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ('ALIGN',         (1, 0), (1, 0),   'CENTER'),
+        ('BOX',           (1, 0), (1, 0),   1.0, NAVY),
+        ('BACKGROUND',    (1, 0), (1, 0),   LGREY),
+        ('TOPPADDING',    (1, 0), (1, 0),   3),
+        ('BOTTOMPADDING', (1, 0), (1, 0),   3),
+        ('LEFTPADDING',   (1, 0), (1, 0),   3),
+        ('RIGHTPADDING',  (1, 0), (1, 0),   3),
     ]))
     story.append(outer)
     story.append(Spacer(1, 10))
@@ -196,10 +196,10 @@ def _build_result_slip_pdf(profile, level, semester_label, course_data,
             item['course'].code,
             item['course'].title,
             str(item['course'].credit_units),
-            str(r.ca_score) if r else '—',
-            str(r.exam_score) if r else '—',
+            str(r.ca_score)    if r else '—',
+            str(r.exam_score)  if r else '—',
             str(r.total_score) if r else '—',
-            r.grade if r else '—',
+            r.grade            if r else '—',
             str(r.grade_point) if r else '—',
         ])
     col_w = [0.6*cm, 2.3*cm, 6.8*cm, 1.0*cm, 1.1*cm, 1.2*cm, 1.2*cm, 1.0*cm, 1.0*cm]
@@ -210,21 +210,21 @@ def _build_result_slip_pdf(profile, level, semester_label, course_data,
 
     summary_data = [
         ['Total Credit Units', 'Semester GPA', 'CGPA'],
-        [str(total_credits), str(gpa), str(cgpa)],
+        [str(total_credits),   str(gpa),        str(cgpa)],
     ]
     sum_tbl = Table(summary_data, colWidths=[5.67*cm, 5.67*cm, 5.66*cm])
     sum_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), LGREY),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, 0), 7),
-        ('TEXTCOLOR', (0, 0), (-1, 0), DGREY),
-        ('FONTNAME', (0, 1), (-1, 1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 1), (-1, 1), 10),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('TOPPADDING', (0, 0), (-1, -1), 7),
+        ('BACKGROUND',    (0, 0), (-1, -1), LGREY),
+        ('FONTNAME',      (0, 0), (-1, 0),  'Helvetica'),
+        ('FONTSIZE',      (0, 0), (-1, 0),  7),
+        ('TEXTCOLOR',     (0, 0), (-1, 0),  DGREY),
+        ('FONTNAME',      (0, 1), (-1, 1),  'Helvetica-Bold'),
+        ('FONTSIZE',      (0, 1), (-1, 1),  10),
+        ('ALIGN',         (0, 0), (-1, -1), 'CENTER'),
+        ('TOPPADDING',    (0, 0), (-1, -1), 7),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 7),
-        ('BOX', (0, 0), (-1, -1), 1.0, NAVY),
-        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+        ('BOX',           (0, 0), (-1, -1), 1.0, NAVY),
+        ('INNERGRID',     (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
     ]))
     story.append(sum_tbl)
     story.append(Spacer(1, 20))
@@ -248,7 +248,7 @@ def _build_transcript_pdf(profile, transcript_data, cgpa,
     doc = SimpleDocTemplate(buf, pagesize=A4,
                             leftMargin=2*cm, rightMargin=2*cm,
                             topMargin=2*cm, bottomMargin=2*cm)
-    s = _pdf_styles()
+    s     = _pdf_styles()
     story = []
 
     story.append(Paragraph('UNIQUE OPEN UNIVERSITY', s['uni']))
@@ -259,18 +259,18 @@ def _build_transcript_pdf(profile, transcript_data, cgpa,
 
     PHOTO_W, PHOTO_H = 2.8*cm, 3.5*cm
     info_rows = [
-        [Paragraph('<b>Name:</b>', s['label']),
-         Paragraph(profile.get_full_name(), s['value']),
-         Paragraph('<b>Matric No:</b>', s['label']),
-         Paragraph(profile.matric_number, s['value'])],
-        [Paragraph('<b>Department:</b>', s['label']),
-         Paragraph(profile.department.name, s['value']),
-         Paragraph('<b>Faculty:</b>', s['label']),
+        [Paragraph('<b>Name:</b>',            s['label']),
+         Paragraph(profile.get_full_name(),   s['value']),
+         Paragraph('<b>Matric No:</b>',        s['label']),
+         Paragraph(profile.matric_number,      s['value'])],
+        [Paragraph('<b>Department:</b>',       s['label']),
+         Paragraph(profile.department.name,    s['value']),
+         Paragraph('<b>Faculty:</b>',          s['label']),
          Paragraph(profile.department.faculty.name, s['value'])],
-        [Paragraph('<b>Mode of Entry:</b>', s['label']),
-         Paragraph(profile.mode_of_entry, s['value']),
-         Paragraph('<b>Entry Year:</b>', s['label']),
-         Paragraph(profile.entry_year or '—', s['value'])],
+        [Paragraph('<b>Mode of Entry:</b>',    s['label']),
+         Paragraph(profile.mode_of_entry,      s['value']),
+         Paragraph('<b>Entry Year:</b>',        s['label']),
+         Paragraph(profile.entry_year or '—',  s['value'])],
     ]
     info_tbl = Table(info_rows, colWidths=[2.3*cm, 4.8*cm, 2.3*cm, 4.4*cm])
     info_tbl.setStyle(_info_table_style())
@@ -279,20 +279,20 @@ def _build_transcript_pdf(profile, transcript_data, cgpa,
 
     outer = Table([[info_tbl, photo]], colWidths=[13.8*cm, PHOTO_W + 0.4*cm])
     outer.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('ALIGN', (1, 0), (1, 0), 'CENTER'),
-        ('BOX', (1, 0), (1, 0), 1.0, NAVY),
-        ('BACKGROUND', (1, 0), (1, 0), LGREY),
-        ('TOPPADDING', (1, 0), (1, 0), 3),
-        ('BOTTOMPADDING', (1, 0), (1, 0), 3),
-        ('LEFTPADDING', (1, 0), (1, 0), 3),
-        ('RIGHTPADDING', (1, 0), (1, 0), 3),
+        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
+        ('ALIGN',         (1, 0), (1, 0),   'CENTER'),
+        ('BOX',           (1, 0), (1, 0),   1.0, NAVY),
+        ('BACKGROUND',    (1, 0), (1, 0),   LGREY),
+        ('TOPPADDING',    (1, 0), (1, 0),   3),
+        ('BOTTOMPADDING', (1, 0), (1, 0),   3),
+        ('LEFTPADDING',   (1, 0), (1, 0),   3),
+        ('RIGHTPADDING',  (1, 0), (1, 0),   3),
     ]))
     story.append(outer)
     story.append(Spacer(1, 12))
 
     headers = [['Code', 'Course Title', 'Cr', 'Score', 'Grd', 'GP']]
-    col_w = [2.5*cm, 9.0*cm, 1.2*cm, 1.5*cm, 1.2*cm, 1.6*cm]
+    col_w   = [2.5*cm, 9.0*cm, 1.2*cm, 1.5*cm, 1.2*cm, 1.6*cm]
 
     for section_key, results in transcript_data.items():
         story.append(_section_heading(section_key, s))
@@ -314,17 +314,17 @@ def _build_transcript_pdf(profile, transcript_data, cgpa,
     ]
     sum_tbl = Table(summary_data, colWidths=[8.5*cm, 8.5*cm])
     sum_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), LGREY),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, 0), 7),
-        ('TEXTCOLOR', (0, 0), (-1, 0), DGREY),
-        ('FONTNAME', (0, 1), (-1, 1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 1), (-1, 1), 10),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('BACKGROUND',    (0, 0), (-1, -1), LGREY),
+        ('FONTNAME',      (0, 0), (-1, 0),  'Helvetica'),
+        ('FONTSIZE',      (0, 0), (-1, 0),  7),
+        ('TEXTCOLOR',     (0, 0), (-1, 0),  DGREY),
+        ('FONTNAME',      (0, 1), (-1, 1),  'Helvetica-Bold'),
+        ('FONTSIZE',      (0, 1), (-1, 1),  10),
+        ('ALIGN',         (0, 0), (-1, -1), 'CENTER'),
+        ('TOPPADDING',    (0, 0), (-1, -1), 8),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-        ('BOX', (0, 0), (-1, -1), 1.0, NAVY),
-        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+        ('BOX',           (0, 0), (-1, -1), 1.0, NAVY),
+        ('INNERGRID',     (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
     ]))
     story.append(sum_tbl)
     story.append(Spacer(1, 20))
@@ -365,16 +365,16 @@ def register_view(request):
             try:
                 with transaction.atomic():
                     user = User.objects.create_user(
-                        username=form.cleaned_data['username'],
-                        password=form.cleaned_data['password1'],
-                        email=form.cleaned_data['email'],
-                        first_name=form.cleaned_data['first_name'],
-                        last_name=form.cleaned_data['last_name'],
+                        username   = form.cleaned_data['username'],
+                        password   = form.cleaned_data['password1'],
+                        email      = form.cleaned_data['email'],
+                        first_name = form.cleaned_data['first_name'],
+                        last_name  = form.cleaned_data['last_name'],
                     )
 
-                    current_session = AcademicSession.objects.filter(is_current=True).first()
+                    current_session  = AcademicSession.objects.filter(is_current=True).first()
                     current_semester = Semester.objects.filter(is_current=True).first()
-                    matric = form.cleaned_data['matric_number']
+                    matric           = form.cleaned_data['matric_number']
 
                     StudentProfile.objects.create(
                         user=user,
@@ -479,7 +479,7 @@ def dashboard(request):
     if not profile.profile_completed:
         return redirect('complete_profile')
 
-    current_session = AcademicSession.objects.filter(is_current=True).first()
+    current_session  = AcademicSession.objects.filter(is_current=True).first()
     current_semester = Semester.objects.filter(is_current=True).first()
 
     current_courses = Course.objects.filter(
@@ -489,13 +489,13 @@ def dashboard(request):
         is_active=True,
     ).order_by('code')
 
-    current_results = Result.objects.filter(
+    current_results      = Result.objects.filter(
         student=profile,
         course__level=profile.current_level,
         course__semester=profile.current_semester,
     ).select_related('course')
     current_results_dict = {r.course_id: r for r in current_results}
-    current_course_data = [
+    current_course_data  = [
         {'course': c, 'result': current_results_dict.get(c.id)}
         for c in current_courses
     ]
@@ -508,7 +508,7 @@ def dashboard(request):
         if gpa_obj:
             current_gpa = gpa_obj.gpa
 
-    past_semesters = []
+    past_semesters  = []
     reached_current = False
 
     for level in profile.department.get_levels():
@@ -548,14 +548,14 @@ def dashboard(request):
                 avg = round(sum(float(r.total_score) for r in results) / results.count(), 2)
 
             past_semesters.append({
-                'level': level,
-                'semester': sem,
+                'level':            level,
+                'semester':         sem,
                 'semester_display': dict(SEMESTER_CHOICES).get(sem, sem),
-                'courses': course_data,
-                'average': avg,
-                'fee': fee,
-                'fee_payment': fee_payment,
-                'has_results': results.exists(),
+                'courses':          course_data,
+                'average':          avg,
+                'fee':              fee,
+                'fee_payment':      fee_payment,
+                'has_results':      results.exists(),
             })
 
     current_fee = Fee.objects.filter(
@@ -572,13 +572,13 @@ def dashboard(request):
     profile.calculate_cgpa()
 
     return render(request, 'portal/dashboard.html', {
-        'profile': profile,
-        'past_semesters': past_semesters,
-        'current_courses': current_course_data,
-        'current_fee': current_fee,
+        'profile':             profile,
+        'past_semesters':      past_semesters,
+        'current_courses':     current_course_data,
+        'current_fee':         current_fee,
         'current_fee_payment': current_fee_payment,
-        'current_gpa': current_gpa,
-        'classification': profile.get_classification(),
+        'current_gpa':         current_gpa,
+        'classification':      profile.get_classification(),
     })
 
 
@@ -591,11 +591,11 @@ def upload_fee_receipt(request, fee_id):
         messages.error(request, 'Student profile not found.')
         return redirect('login')
 
-    fee = get_object_or_404(Fee, id=fee_id, department=profile.department)
+    fee              = get_object_or_404(Fee, id=fee_id, department=profile.department)
     existing_payment = FeePayment.objects.filter(student=profile, fee=fee).first()
 
-    if existing_payment and existing_payment.status == 'paid':
-        messages.info(request, 'This fee has already been verified as paid.')
+    if existing_payment and existing_payment.status in ['paid', 'part_paid']:
+        messages.info(request, 'This fee has already been verified.')
         return redirect('dashboard')
 
     if request.method == 'POST':
@@ -603,10 +603,10 @@ def upload_fee_receipt(request, fee_id):
         if form.is_valid():
             if existing_payment:
                 existing_payment.delete()
-            payment = form.save(commit=False)
+            payment         = form.save(commit=False)
             payment.student = profile
-            payment.fee = fee
-            payment.status = 'pending'
+            payment.fee     = fee
+            payment.status  = 'pending'
             payment.save()
             messages.success(request,
                 'Receipt submitted! Pending verification.')
@@ -683,9 +683,9 @@ def result_slip_pdf(request, level, semester):
         course__semester=semester, status='published',
     ).select_related('course')
 
-    result_dict = {r.course_id: r for r in results}
-    course_data = [{'course': c, 'result': result_dict.get(c.id)} for c in courses]
-    total_credits = sum(item['course'].credit_units for item in course_data)
+    result_dict        = {r.course_id: r for r in results}
+    course_data        = [{'course': c, 'result': result_dict.get(c.id)} for c in courses]
+    total_credits      = sum(item['course'].credit_units for item in course_data)
     total_grade_points = Decimal('0.00')
 
     for item in course_data:
@@ -701,14 +701,14 @@ def result_slip_pdf(request, level, semester):
 
     try:
         pdf_bytes = _build_result_slip_pdf(
-            profile=profile,
-            level=level,
-            semester_label={'First': 'First Semester', 'Second': 'Second Semester'}.get(semester, semester),
-            course_data=course_data,
-            total_credits=total_credits,
-            gpa=gpa,
-            cgpa=profile.cgpa,
-            generated_date=timezone.now(),
+            profile        = profile,
+            level          = level,
+            semester_label = {'First': 'First Semester', 'Second': 'Second Semester'}.get(semester, semester),
+            course_data    = course_data,
+            total_credits  = total_credits,
+            gpa            = gpa,
+            cgpa           = profile.cgpa,
+            generated_date = timezone.now(),
         )
         resp = HttpResponse(pdf_bytes, content_type='application/pdf')
         resp['Content-Disposition'] = (
@@ -742,11 +742,11 @@ def transcript_pdf(request):
 
     try:
         pdf_bytes = _build_transcript_pdf(
-            profile=profile,
-            transcript_data=transcript_data,
-            cgpa=profile.cgpa,
-            classification=profile.get_classification(),
-            generated_date=timezone.now(),
+            profile         = profile,
+            transcript_data = transcript_data,
+            cgpa            = profile.cgpa,
+            classification  = profile.get_classification(),
+            generated_date  = timezone.now(),
         )
         resp = HttpResponse(pdf_bytes, content_type='application/pdf')
         resp['Content-Disposition'] = (
@@ -764,15 +764,15 @@ def direct_password_reset(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
 
-    error = None
+    error   = None
     success = False
 
     if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
-        matric = request.POST.get('matric_number', '').strip()
-        email = request.POST.get('email', '').strip().lower()
+        username     = request.POST.get('username',     '').strip()
+        matric       = request.POST.get('matric_number','').strip()
+        email        = request.POST.get('email',        '').strip().lower()
         new_password = request.POST.get('new_password', '').strip()
-        confirm_pw = request.POST.get('confirm_password', '').strip()
+        confirm_pw   = request.POST.get('confirm_password', '').strip()
 
         if not new_password or len(new_password) < 8:
             error = 'New password must be at least 8 characters.'
@@ -815,6 +815,6 @@ def direct_password_reset(request):
                 )
 
     return render(request, 'registration/direct_password_reset.html', {
-        'error': error,
+        'error':   error,
         'success': success,
     })

@@ -19,9 +19,10 @@ SEMESTER_CHOICES = [
 ]
 
 FEE_STATUS_CHOICES = [
-    ('unpaid',  'Unpaid'),
-    ('pending', 'Pending Verification'),
-    ('paid',    'Paid'),
+    ('unpaid',    'Unpaid'),
+    ('pending',   'Pending Verification'),
+    ('part_paid', 'Part Paid'),
+    ('paid',      'Paid'),
 ]
 
 RESULT_STATUS_CHOICES = [
@@ -33,8 +34,6 @@ RESULT_STATUS_CHOICES = [
 
 
 class Faculty(models.Model):
-    """Faculty model (e.g., Faculty of Science, Faculty of Arts)"""
-
     name        = models.CharField(max_length=200, unique=True)
     code        = models.CharField(max_length=10, unique=True)
     dean        = models.CharField(max_length=200, blank=True, help_text='Name of the Dean')
@@ -50,8 +49,6 @@ class Faculty(models.Model):
 
 
 class Department(models.Model):
-    """Department model linked to Faculty"""
-
     name           = models.CharField(max_length=200)
     code           = models.CharField(max_length=10, unique=True)
     faculty        = models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name='departments')
@@ -72,7 +69,6 @@ class Department(models.Model):
         return f"{self.code} - {self.name}"
 
     def get_levels(self):
-        """Return list of level strings based on duration."""
         levels = ['100', '200', '300', '400']
         if self.duration_years == 5:
             levels.append('500')
@@ -80,8 +76,6 @@ class Department(models.Model):
 
 
 class AcademicSession(models.Model):
-    """Academic session (e.g., 2024/2025)"""
-
     name = models.CharField(
         max_length=20,
         unique=True,
@@ -110,8 +104,6 @@ class AcademicSession(models.Model):
 
 
 class Semester(models.Model):
-    """Semester within an academic session"""
-
     session             = models.ForeignKey(AcademicSession, on_delete=models.CASCADE, related_name='semesters')
     semester            = models.CharField(max_length=10, choices=SEMESTER_CHOICES)
     is_current          = models.BooleanField(default=False)
@@ -136,8 +128,6 @@ class Semester(models.Model):
 
 
 class Course(models.Model):
-    """Course model with credit hours and level"""
-
     department        = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='courses')
     code              = models.CharField(max_length=20)
     title             = models.CharField(max_length=200)
@@ -160,8 +150,6 @@ class Course(models.Model):
 
 
 class StudentProfile(models.Model):
-    """Extended profile for student users"""
-
     user             = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     matric_number    = models.CharField(max_length=20, unique=True)
     department       = models.ForeignKey(Department, on_delete=models.PROTECT)
@@ -182,7 +170,6 @@ class StudentProfile(models.Model):
     profile_picture    = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     profile_completed  = models.BooleanField(default=False)
 
-    # CGPA fields
     cgpa                      = models.DecimalField(max_digits=4, decimal_places=2, default=Decimal('0.00'))
     total_credit_units_earned = models.IntegerField(default=0)
     total_grade_points        = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
@@ -205,7 +192,6 @@ class StudentProfile(models.Model):
         return dict(SEMESTER_CHOICES).get(self.current_semester, self.current_semester)
 
     def get_semester_sessions(self):
-        """Returns all level+semester combos up to current level/semester."""
         levels   = self.department.get_levels()
         sessions = []
         for level in levels:
@@ -221,7 +207,6 @@ class StudentProfile(models.Model):
         return [s for s in all_sessions if s != current]
 
     def calculate_cgpa(self):
-        """Calculate CGPA from all approved/verified/published results."""
         results = Result.objects.filter(
             student=self,
             status__in=['approved', 'verified', 'published'],
@@ -246,7 +231,6 @@ class StudentProfile(models.Model):
         return self.cgpa
 
     def get_classification(self):
-        """Get degree classification based on CGPA."""
         if self.cgpa >= Decimal('4.50'):
             return 'First Class Honours'
         elif self.cgpa >= Decimal('3.50'):
@@ -268,8 +252,6 @@ class StudentProfile(models.Model):
 
 
 class CourseRegistration(models.Model):
-    """Student course registration per session/semester"""
-
     student           = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='registrations')
     course            = models.ForeignKey(Course, on_delete=models.CASCADE)
     session           = models.ForeignKey(AcademicSession, on_delete=models.CASCADE)
@@ -291,8 +273,6 @@ class CourseRegistration(models.Model):
 
 
 class Result(models.Model):
-    """Student result for each registered course"""
-
     GRADE_CHOICES = (
         ('A', 'A (70-100)'),
         ('B', 'B (60-69)'),
@@ -316,7 +296,6 @@ class Result(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(70)],
     )
     total_score = models.DecimalField(max_digits=5, decimal_places=2, editable=False)
-    # Legacy field kept in sync with total_score
     score = models.DecimalField(
         max_digits=5, decimal_places=2,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
@@ -354,7 +333,6 @@ class Result(models.Model):
         return f"{self.student.matric_number} - {self.course.code}: {self.total_score}"
 
     def calculate_grade(self):
-        """Calculate letter grade and grade point based on total score."""
         total = float(self.total_score)
         if total >= 70:
             self.grade, self.grade_point = 'A', Decimal('5.0')
@@ -372,7 +350,7 @@ class Result(models.Model):
 
     def save(self, *args, **kwargs):
         self.total_score = self.ca_score + self.exam_score
-        self.score       = self.total_score   # keep legacy field in sync
+        self.score       = self.total_score
         self.calculate_grade()
         super().save(*args, **kwargs)
 
@@ -436,8 +414,6 @@ class FeePayment(models.Model):
 
 
 class GPAResult(models.Model):
-    """Stores calculated GPA for each semester."""
-
     student            = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='gpa_results')
     session            = models.ForeignKey(AcademicSession, on_delete=models.CASCADE)
     semester           = models.ForeignKey(Semester, on_delete=models.CASCADE)
@@ -455,8 +431,6 @@ class GPAResult(models.Model):
 
 
 class CourseAllocation(models.Model):
-    """Assign lecturers to courses."""
-
     lecturer       = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_staff': True})
     course         = models.ForeignKey(Course, on_delete=models.CASCADE)
     session        = models.ForeignKey(AcademicSession, on_delete=models.CASCADE)
