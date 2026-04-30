@@ -107,27 +107,37 @@ def _info_table_style():
 
 def _get_photo_element(profile, width, height):
     """Return an Image element if profile picture exists, else a placeholder."""
-    if profile.profile_picture and profile.profile_picture.name:
+    no_photo = Paragraph('<i>No Photo</i>', ParagraphStyle(
+        'np', fontSize=7, fontName='Helvetica', textColor=DGREY, alignment=TA_CENTER,
+    ))
+
+    if not profile.profile_picture or not profile.profile_picture.name:
+        return no_photo
+
+    try:
+        # Try local filesystem path first (non-Cloudinary storage)
         try:
-            # .path works for local storage; for Cloudinary use the URL via urllib
-            try:
-                img_path = profile.profile_picture.path
-            except NotImplementedError:
-                # Cloudinary storage doesn't support .path — fetch via URL
-                import urllib.request, tempfile, os
-                url = profile.profile_picture.url
-                suffix = os.path.splitext(url.split('?')[0])[-1] or '.jpg'
-                tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
-                urllib.request.urlretrieve(url, tmp.name)
-                img_path = tmp.name
+            img_path = profile.profile_picture.path
             img = Image(img_path, width=width, height=height)
             img.hAlign = 'CENTER'
             return img
-        except Exception:
-            pass
-    return Paragraph('<i>No Photo</i>', ParagraphStyle(
-        'np', fontSize=7, fontName='Helvetica', textColor=DGREY, alignment=TA_CENTER,
-    ))
+        except NotImplementedError:
+            pass  # Cloudinary — fall through to URL fetch
+
+        # Cloudinary: fetch image bytes via URL into BytesIO
+        # (avoids temp file issues — works on every request)
+        import urllib.request
+        url = profile.profile_picture.url
+        # Strip Cloudinary transformation params if any
+        clean_url = url.split('?')[0]
+        with urllib.request.urlopen(clean_url, timeout=10) as resp:
+            img_bytes = BytesIO(resp.read())
+        img = Image(img_bytes, width=width, height=height)
+        img.hAlign = 'CENTER'
+        return img
+
+    except Exception:
+        return no_photo
 
 
 def _build_result_slip_pdf(profile, level, semester_label, course_data,
@@ -210,7 +220,7 @@ def _build_result_slip_pdf(profile, level, semester_label, course_data,
 
     # Summary
     summary_data = [
-        ['Total Credit Units', 'Semester GPA', 'Cumulative CGPA'],
+        ['Total Credit Units', 'Semester GPA', 'CGPA'],
         [str(total_credits),   str(gpa),        str(cgpa)],
     ]
     sum_tbl = Table(summary_data, colWidths=[5.67*cm, 5.67*cm, 5.66*cm])
@@ -373,11 +383,15 @@ def register_view(request):
         if form.is_valid():
             try:
                 with transaction.atomic():
-                    user            = form.save(commit=False)
-                    user.first_name = form.cleaned_data['first_name']
-                    user.last_name  = form.cleaned_data['last_name']
-                    user.email      = form.cleaned_data['email']
-                    user.save()
+                    # Use create_user() directly — guarantees password is
+                    # properly hashed and has_usable_password() returns True
+                    user = User.objects.create_user(
+                        username   = form.cleaned_data['username'],
+                        password   = form.cleaned_data['password1'],
+                        email      = form.cleaned_data['email'],
+                        first_name = form.cleaned_data['first_name'],
+                        last_name  = form.cleaned_data['last_name'],
+                    )
 
                     current_session  = AcademicSession.objects.filter(is_current=True).first()
                     current_semester = Semester.objects.filter(is_current=True).first()
@@ -440,7 +454,7 @@ def complete_profile(request):
 
     if profile.profile_completed:
         messages.warning(request,
-            'Your profile has already been saved and cannot be edited. '
+            'Profile saved. '
             'Contact the admin for any corrections.')
         return redirect('dashboard')
 
@@ -612,7 +626,7 @@ def upload_fee_receipt(request, fee_id):
             payment.status  = 'pending'
             payment.save()
             messages.success(request,
-                'Receipt submitted! It will be verified by the admin.')
+                'Receipt submitted! Pending verification.')
             return redirect('dashboard')
     else:
         form = FeePaymentForm(fee=fee, student=profile)
@@ -760,3 +774,77 @@ def transcript_pdf(request):
     except Exception:
         messages.error(request, 'Error generating PDF. Please try again.')
         return redirect('dashboard')
+
+# Direct password reset 
+# Student must match 2 out of 3: username, matric number, email
+@never_cache
+@require_http_methods(['GET', 'POST'])
+def direct_password_reset(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    error   = None
+    success = False
+
+    if request.method == 'POST':
+        username     = request.POST.get('username',     '').strip()
+        matric       = request.POST.get('matric_number','').strip()
+        email        = request.POST.get('email',        '').strip().lower()
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_pw   = request.POST.get('confirm_password', '').strip()
+
+        # Validate new password fields first
+        if not new_password or len(new_password) < 8:
+            error = 'New password must be at least 8 characters.'
+        elif new_password != confirm_pw:
+            error = 'Passwords do not match.'
+        elif new_password.isdigit():
+            error = 'Password cannot be entirely numeric.'
+        else:
+            # Try to find matching user — check all 3 fields
+            from django.contrib.auth.models import User
+            from .models import StudentProfile
+
+            matched_user = None
+
+            # Build candidates from whichever fields were provided
+            candidates = User.objects.filter(is_active=True)
+
+            if username:
+                candidates = candidates.filter(username__iexact=username)
+            if email:
+                candidates = candidates.filter(email__iexact=email)
+
+            for user in candidates:
+                # Count how many conditions match
+                score = 0
+                if username and user.username.lower() == username.lower():
+                    score += 1
+                if email and user.email.lower() == email.lower():
+                    score += 1
+                if matric:
+                    try:
+                        profile = user.student_profile
+                        if profile.matric_number.lower() == matric.lower():
+                            score += 1
+                    except StudentProfile.DoesNotExist:
+                        pass
+
+                if score >= 2:
+                    matched_user = user
+                    break
+
+            if matched_user:
+                matched_user.set_password(new_password)
+                matched_user.save()
+                success = True
+            else:
+                error = (
+                    'No account found matching those details. '
+                    'At least 2 of the 3 fields must match your registered account.'
+                )
+
+    return render(request, 'registration/direct_password_reset.html', {
+        'error':   error,
+        'success': success,
+    })

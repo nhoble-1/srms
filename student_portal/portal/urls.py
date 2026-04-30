@@ -15,4 +15,7 @@ urlpatterns = [
     # PDF Generation
     path('result-slip/<str:level>/<str:semester>/', views.result_slip_pdf,  name='result_slip_pdf'),
     path('transcript/',                          views.transcript_pdf,       name='transcript_pdf'),
+
+    # Direct password reset 
+    path('reset-password/',                      views.direct_password_reset, name='direct_password_reset'),
 ]

@@ -97,10 +97,8 @@ class StudentProfileForm(forms.ModelForm):
     def clean_profile_picture(self):
         picture = self.cleaned_data.get('profile_picture')
         if picture:
-            # Reject files over 2MB
             if hasattr(picture, 'size') and picture.size > 2 * 1024 * 1024:
                 raise forms.ValidationError('Profile picture must be under 2MB.')
-            # Reject non-image types
             allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
             if hasattr(picture, 'content_type') and picture.content_type not in allowed:
                 raise forms.ValidationError('Only JPG, PNG, GIF or WEBP images are allowed.')
