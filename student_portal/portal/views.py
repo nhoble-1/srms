@@ -780,18 +780,11 @@ def direct_password_reset(request):
             error = 'Passwords do not match.'
         elif new_password.isdigit():
             error = 'Password cannot be entirely numeric.'
+        elif not username and not matric and not email:
+            error = 'Please fill in at least two of the three fields.'
         else:
-            from django.contrib.auth.models import User
-            from .models import StudentProfile
-
-            matched_user = None
-
             candidates = User.objects.filter(is_active=True)
-
-            if username:
-                candidates = candidates.filter(username__iexact=username)
-            if email:
-                candidates = candidates.filter(email__iexact=email)
+            matched_user = None
 
             for user in candidates:
                 score = 0
