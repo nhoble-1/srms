@@ -21,7 +21,7 @@
                     <div class="auth-left-logo-icon">
                         <i class="bi bi-mortarboard-fill"></i>
                     </div>
-                    <h2 class="auth-left-title">UNIQUE OPEN UNIVERSITY</h2>
+                    <h2 class="auth-left-title">Unique Open University</h2>
                     <p class="auth-left-subtitle">Student academic management system</p>
                 </div>
 
@@ -111,13 +111,10 @@
                     </button>
                 </form>
 
-                <div class="text-center mt-3">
-                    <a href="{% url 'password_reset' %}" class="auth-footer-link" style="font-size:0.85rem;">
+                <div class="text-center mt-4">
+                    <a href="{% url 'direct_password_reset' %}" class="auth-footer-link d-block mb-2" style="font-size:.85rem;">
                         <i class="bi bi-key me-1"></i>Forgot your password?
                     </a>
-                </div>
-
-                <div class="text-center mt-3">
                     <span class="auth-footer-text">Don't have an account? </span>
                     <a href="{% url 'register' %}" class="auth-footer-link">Register here</a>
                 </div>
