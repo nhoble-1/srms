@@ -243,6 +243,40 @@ class StudentProfile(models.Model):
             return 'Pass'
         return 'Fail'
 
+    def calculate_semester_gpa(self, session, semester):
+        """Recalculate this student's GPA for one (session, semester) and
+        persist it to GPAResult, which is what the dashboard reads from."""
+        if session is None or semester is None:
+            return None
+
+        results = Result.objects.filter(
+            student=self, session=session, semester=semester,
+            status__in=['approved', 'verified', 'published'],
+        ).select_related('course')
+
+        total_grade_points = Decimal('0.00')
+        total_credits      = 0
+        for result in results:
+            total_grade_points += Decimal(str(result.grade_point)) * result.course.credit_units
+            total_credits      += result.course.credit_units
+
+        if total_credits > 0:
+            gpa = (total_grade_points / Decimal(str(total_credits))).quantize(
+                Decimal('0.01'), rounding=ROUND_HALF_UP,
+            )
+        else:
+            gpa = Decimal('0.00')
+
+        GPAResult.objects.update_or_create(
+            student=self, session=session, semester=semester,
+            defaults={
+                'gpa':                gpa,
+                'total_credits':      total_credits,
+                'total_grade_points': total_grade_points,
+            },
+        )
+        return gpa
+
     def get_semester_average(self, level, semester):
         results = self.results.filter(course__level=level, course__semester=semester)
         if results.exists():
@@ -353,15 +387,21 @@ class Result(models.Model):
         self.score       = self.total_score
         self.calculate_grade()
         super().save(*args, **kwargs)
-        # Keep the student's CGPA in sync whenever a result is added or edited
-        # (e.g. from the Django admin), instead of only at some other unrelated time.
+        # Keep the student's CGPA and the relevant semester's GPAResult in sync
+        # whenever a result is added or edited (e.g. from the Django admin).
         self.student.calculate_cgpa()
+        if self.semester_id:
+            self.student.calculate_semester_gpa(self.session, self.semester)
 
     def delete(self, *args, **kwargs):
-        student = self.student
+        student  = self.student
+        session  = self.session
+        semester = self.semester
         super().delete(*args, **kwargs)
-        # A deleted/reverted result should also pull the CGPA back down.
+        # A deleted/reverted result should also pull CGPA and semester GPA back down.
         student.calculate_cgpa()
+        if semester:
+            student.calculate_semester_gpa(session, semester)
 
     def get_grade_label(self):
         total = float(self.total_score)

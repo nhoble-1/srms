@@ -106,7 +106,15 @@ class StudentProfileAdmin(admin.ModelAdmin):
     def recalculate_cgpa(self, request, queryset):
         for profile in queryset:
             profile.calculate_cgpa()
-        self.message_user(request, f'CGPA recalculated for {queryset.count()} student(s).')
+            # Backfill GPAResult for every session/semester this student has
+            # results in, in case those rows predate the auto-sync fix.
+            combos = Result.objects.filter(student=profile).values_list(
+                'session', 'semester',
+            ).distinct()
+            for session_id, semester_id in combos:
+                if session_id and semester_id:
+                    profile.calculate_semester_gpa(session_id, semester_id)
+        self.message_user(request, f'CGPA and semester GPA recalculated for {queryset.count()} student(s).')
     recalculate_cgpa.short_description = 'Recalculate CGPA for selected students'
 
 
@@ -161,17 +169,23 @@ class ResultAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
     def approve_results(self, request, queryset):
-        queryset.update(status='approved')
-        self.message_user(request, f'{queryset.count()} result(s) approved.')
+        count = 0
+        for result in queryset:
+            result.status = 'approved'
+            result.save()  # goes through Result.save() so grade/CGPA/GPA stay in sync
+            count += 1
+        self.message_user(request, f'{count} result(s) approved.')
     approve_results.short_description = 'Approve selected results'
 
     def publish_results(self, request, queryset):
-        queryset.update(
-            status='published',
-            published_by=request.user,
-            publication_date=timezone.now(),
-        )
-        self.message_user(request, f'{queryset.count()} result(s) published.')
+        count = 0
+        for result in queryset:
+            result.status            = 'published'
+            result.published_by      = request.user
+            result.publication_date  = timezone.now()
+            result.save()  # goes through Result.save() so grade/CGPA/GPA stay in sync
+            count += 1
+        self.message_user(request, f'{count} result(s) published.')
     publish_results.short_description = 'Publish selected results'
 
 
