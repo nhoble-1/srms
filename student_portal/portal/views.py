@@ -662,6 +662,7 @@ def semester_detail(request, level, semester):
     })
 
 
+@never_cache
 @login_required
 def result_slip_pdf(request, level, semester):
     profile = _get_profile_or_none(request)
@@ -714,12 +715,15 @@ def result_slip_pdf(request, level, semester):
         resp['Content-Disposition'] = (
             f'inline; filename="result_slip_{profile.matric_number}_{level}L_{semester}.pdf"'
         )
+        resp['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        resp['Pragma'] = 'no-cache'
         return resp
     except Exception as e:
         messages.error(request, 'Error generating PDF. Please try again.')
         return redirect('dashboard')
 
 
+@never_cache
 @login_required
 def transcript_pdf(request):
     profile = _get_profile_or_none(request)
@@ -752,6 +756,8 @@ def transcript_pdf(request):
         resp['Content-Disposition'] = (
             f'inline; filename="transcript_{profile.matric_number}.pdf"'
         )
+        resp['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        resp['Pragma'] = 'no-cache'
         return resp
     except Exception:
         messages.error(request, 'Error generating PDF. Please try again.')
