@@ -353,6 +353,15 @@ class Result(models.Model):
         self.score       = self.total_score
         self.calculate_grade()
         super().save(*args, **kwargs)
+        # Keep the student's CGPA in sync whenever a result is added or edited
+        # (e.g. from the Django admin), instead of only at some other unrelated time.
+        self.student.calculate_cgpa()
+
+    def delete(self, *args, **kwargs):
+        student = self.student
+        super().delete(*args, **kwargs)
+        # A deleted/reverted result should also pull the CGPA back down.
+        student.calculate_cgpa()
 
     def get_grade_label(self):
         total = float(self.total_score)
